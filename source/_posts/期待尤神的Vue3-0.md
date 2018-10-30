@@ -4,6 +4,8 @@ date: 2018-10-06 11:36:29
 tags: 
 - 尤雨溪
 - Vue 3.0
+categories: 
+- 前端
 ---
 十一的长假已经接近尾声，假期除了各个旅游景点的火爆之外，对于广大前端开发者来说还是有一件令人兴奋和担忧的事情就是尤雨溪在[medium 个人博客](https://medium.com/the-vue-point/plans-for-the-next-iteration-of-vue-js-777ffea6fabf)上发布了 Vue 3.0 的开发路线，更可怕的还是将从头开始重写 3.0。
 <!-- more -->
