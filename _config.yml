@@ -81,3 +81,8 @@ deploy:
   type: git
   repository: https://github.com/FWC1994/FWC1994.github.io.git
   branch: master
+
+server:
+  port: 4001
+  compress: true
+  header: true
