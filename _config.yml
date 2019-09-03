@@ -13,9 +13,13 @@ timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
+sitemap: 
+  path: sitemap.xml
+baidusitemap:
+  path: baidusitemap.xml
+url: http://fengwc.cn
 root: /
-permalink: :year/:month/:day/:title/
+permalink: article/:title/
 permalink_defaults:
 
 # Directory
@@ -86,3 +90,8 @@ server:
   port: 4001
   compress: true
   header: true
+
+nofollow:
+    enable: true
+    exclude:
+        - fengwc.cn
