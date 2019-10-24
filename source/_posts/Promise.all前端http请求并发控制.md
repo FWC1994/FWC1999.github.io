@@ -11,33 +11,76 @@ categories:
 <!-- more -->
 
 ## 场景
-一个典型的场景就是文件上传。针对较大文件的上传需要采用分片上传的方式，讲一个文件切割成小的分片然后分批上传。
+
+- 文件切片上传
+针对较大文件的上传需要采用分片上传的方式，将一个文件切割成小的分片然后分批上传。
+- nodejs 爬虫
+为了避免爬虫被识别封IP，往往要控制爬虫的请求并发量，毕竟"偷拿"别人东西还是要低调点
+
 
 ## Promise.all实现并发控制
-Promise.all可以将多个Promise实例包装成一个新的Promise实例，即可以同时发送多个http请求然后所有的请求都返回后才会返回一个数组，那么如何用Promise.all做这种并发的控制呢？直接贴上代码吧
+Promise.all可以将多个Promise实例包装成一个新的Promise实例，即可以同时发送多个http请求然后所有的请求都返回后才会返回一个数组，利用Promise.all 和异步函数的递归调用就可以实现并发控制。实现代码如下：
 ``` javascript
+let jobList = [1,2,3,4,5,6,7,8,9,10] // 待处理异步任务
+const LIMIT = 2 // 并发数限制
 
+// 任务处理异步函数
+function asyncHandle(val){
+    return new Promise((resolve, reject) => {
+        // 此处处理异步业务逻辑
+        setTimeout(() => { 
+            resolve(val)
+        },  Math.random()*2000)
+    })
+}
+
+// 流程控制异步函数
+function asyncFun(val) {
+    return asyncHandle(val).then((res) => {
+        console.log(`正在执行的任务:${val}`)
+        if(jobList.length > 0){
+            return asyncFun(jobList.shift())
+        }else{
+            return val
+        }
+    })
+}
+
+let asyncPool = []
+// 初始化第一批任务列表 TODO: 判断jobList长度是否大于LIMIT
+for(let i = 0; i < LIMIT; i++){
+    let job = jobList.shift()
+    asyncPool.push(asyncFun(job))
+}
+
+Promise.all(asyncPool).then((res) => {
+    console.log('done!',res)
+}).catch((e) => {
+    console.error(e)
+})
 ```
 
-## Vue 3.0变化
-- 高级API的变更
-除了渲染函数和作用域插槽语法之外的所有内容都将保持不变，这无疑对于广大开发者是一个好消息。
+运行结果：
+```
+正在执行的任务:1
+正在执行的任务:2
+正在执行的任务:3
+正在执行的任务:5
+正在执行的任务:4
+正在执行的任务:6
+正在执行的任务:8
+正在执行的任务:7
+正在执行的任务:10
+正在执行的任务:9
+done!
+Array(2) [9, 10]
+```
+从结果可以看出尽管执行了10个异步函数，但最终Promise.all最终的返回结果中只有两个，这取决于并发的个数，异步函数的返回结果为每个任务执行"线程"最终的结果。不过也可以通过另外一个变量收集每个异步函数的执行结果。
 
-- 源码结构调整
-代码模块间解耦，以便使代码更方便进行维护，Vue3.0将会重写，但是源码依然使用TypeScript作为开发语言，相信 TypeScript 的类型系统和 IDE 的支持将让新的代码贡献者更容易做出有意义的贡献。
-![新的源代码结构](https://cdn-images-1.medium.com/max/1600/1*H8yM0usFhWYlY6GV2wcrEw.png)
+## 其他方案
+另外有一些npm 的库可以使用
+- [tiny-async-pool](https://www.npmjs.com/package/tiny-async-pool)
+- [tiny-async-pool](https://www.npmjs.com/package/es6-promise-pool)
+- [p-limit](https://www.npmjs.com/package/p-limit)
 
-- 改进观察机制
-Vue 3.0采用基于代理的观察模式，并提供了相应的API，是状态观察更加清晰明确，可调式
-
--  其他运行时改进
-
-- 编译器改进
-    1. [tree-shaking](https://webpack.docschina.org/guides/tree-shaking/)输出友好
-    2. AOT 优化
-    3. 错误信息优化
-    4. 支持[Source Map](http://www.ruanyifeng.com/blog/2013/01/javascript_source_map.html)
-- 支持IE11
-## 任重而道远
-从尤雨溪的文章中可以看出Vue3.0目前还处于一个规划的阶段，还有一些新的特性还需要进一步验证才能确定下来。但是已经有了一个较为清晰的版本发布的计划，相信在不远的2019年尤神一定会如约带给我们一个惊喜。
 
