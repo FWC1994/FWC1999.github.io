@@ -3,7 +3,7 @@ title: Promise.all前端http请求并发控制
 date: 2019-10-23 07:20:29
 tags: 
 - Promise
-- Javascript
+- JavaScript
 categories: 
 - 前端
 ---
