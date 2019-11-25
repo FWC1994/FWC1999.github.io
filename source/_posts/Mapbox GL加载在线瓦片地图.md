@@ -4,6 +4,8 @@ date: 2018-11-18 15:36:45
 tags: 
 - Mapbox GL
 - Vue
+categories: 
+- WebGIS
 ---
 接触一些前端的WebGIS Javascript开发SDK,都是大同小异，但是一接触到Mapbox，就被其精美的在线地图，流畅的前端体验，强大的可视化渲染能力所吸引。Mapbox GL使用WebGL渲染地图和图层，这也使得大量数据的可视化在前端的渲染成为了可能，并且具有优秀的体验。所以决定研究一下Mapbox GL的相关开发，并通过博客的形式记录自己的学习历程。
 <!-- more -->
