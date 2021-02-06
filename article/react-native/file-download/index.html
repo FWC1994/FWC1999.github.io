@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="App中进行文件下载的场景很常见，如音视频软件对资源进行离线缓存，或者Android手机中下载Apk安装包升级等等场景都会涉及到文件下载。翻遍了React Native下载相关的开源库，没有一套完整的方案可以实现文件的下载、暂停、继续下载，并记录下载状态这样的功能。经过一番调研，在技术上通过RN是可以实现这一功能的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React Native 实现文件下载">
+<meta property="og:url" content="http://fengwc.cn/article/react-native/file-download/index.html">
+<meta property="og:site_name" content="╰ 羽翼 ╮的博客">
+<meta property="og:description" content="App中进行文件下载的场景很常见，如音视频软件对资源进行离线缓存，或者Android手机中下载Apk安装包升级等等场景都会涉及到文件下载。翻遍了React Native下载相关的开源库，没有一套完整的方案可以实现文件的下载、暂停、继续下载，并记录下载状态这样的功能。经过一番调研，在技术上通过RN是可以实现这一功能的。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://fengwc.cn/images/article/react-native/8.jpg">
+<meta property="og:updated_time" content="2021-02-06T01:57:12.598Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="React Native 实现文件下载">
+<meta name="twitter:description" content="App中进行文件下载的场景很常见，如音视频软件对资源进行离线缓存，或者Android手机中下载Apk安装包升级等等场景都会涉及到文件下载。翻遍了React Native下载相关的开源库，没有一套完整的方案可以实现文件的下载、暂停、继续下载，并记录下载状态这样的功能。经过一番调研，在技术上通过RN是可以实现这一功能的。">
+<meta name="twitter:image" content="http://fengwc.cn/images/article/react-native/8.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://fengwc.cn/article/react-native/file-download/">
+
+
+
+
+
+  <title>React Native 实现文件下载 | ╰ 羽翼 ╮的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">╰ 羽翼 ╮的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fengwc.cn/article/react-native/file-download/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="羽翼">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="╰ 羽翼 ╮的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">React Native 实现文件下载</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-05T00:00:00+08:00">
+                2021-02-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/React-Native/" itemprop="url" rel="index">
+                    <span itemprop="name">React Native</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>App中进行文件下载的场景很常见，如音视频软件对资源进行离线缓存，或者Android手机中下载Apk安装包升级等等场景都会涉及到文件下载。翻遍了React Native下载相关的开源库，没有一套完整的方案可以实现文件的下载、暂停、继续下载，并记录下载状态这样的功能。经过一番调研，在技术上通过RN是可以实现这一功能的。</p>
+<a id="more"></a>
+<h2 id="核心技术方案"><a href="#核心技术方案" class="headerlink" title="核心技术方案"></a>核心技术方案</h2><p>实现上有两个关键的技术点：</p>
+<ol>
+<li>如何在本地管理和维护下载状态，用于在下载列表中展示和管理当前下载任务。</li>
+<li>下载、暂停、退出APP后再次打开如何继续下载。</li>
+</ol>
+<h3 id="Async-Storage"><a href="#Async-Storage" class="headerlink" title="Async Storage"></a>Async Storage</h3><p>【开源地址】<a href="https://github.com/react-native-async-storage/async-storage" rel="external nofollow noopener noreferrer" target="_blank">https://github.com/react-native-async-storage/async-storage</a></p>
+<p>AsyncStorage是一个简单的、异步的、持久化的 Key-Value 存储系统，从前端的角度来理解就相当于是LocalStorage，AsyncStorage中保存的数据不会因为退出、升级操作而丢失，所以可以作为一种持久化保存的技术方案。</p>
+<h3 id="RN-Fetch-Blob"><a href="#RN-Fetch-Blob" class="headerlink" title="RN-Fetch-Blob"></a>RN-Fetch-Blob</h3><p>【开源地址】<a href="https://github.com/joltup/rn-fetch-blob" rel="external nofollow noopener noreferrer" target="_blank">https://github.com/joltup/rn-fetch-blob</a></p>
+<p>RN-Fetch-Blob可以支持文件的上传和下载，并提供了一系列文件操作的API，更重要是针对大文件可以支持流式下载，将已下载的部分临时存储在本地，这一特性是实现中断后继续下载的关键。</p>
+<h3 id="Request-Header-Range参数"><a href="#Request-Header-Range参数" class="headerlink" title="Request Header Range参数"></a>Request Header Range参数</h3><p>【参考资料】<a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Range_requests" rel="external nofollow noopener noreferrer" target="_blank">https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Range_requests</a></p>
+<p>HTTP Request的Header中可以设置一个Range参数，即对于一个HTTP请求，可以设置Header Range: <code>bytes=${preSize}-</code>，请求返回的结果是一个206 Partial Content 的状态码，内容就是对应大小范围内资源。</p>
+<h2 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h2><p>看了上面的几个核心技术方案，我们实现的思路已经很明确了。下载中断后再次下载时只需要获取已下载临时文件的大小，然后设置下载下载的Range: <code>bytes=${preSize}-</code>，下载完成后将临时文件以追加的方式合并至目标文件，这样就最终的结果就可以拼接成一个完整的文件。<br><img src="../../../images/article/react-native/8.jpg" alt></p>
+<p>下载的任务列表、状态和进度等信息可以通过AsyncStorage进行持久化存储，并在UI层次进行展示。再次打开APP如果存在状态是未完成的任务，在wifi环境下就可以继续下载了。</p>
+<h2 id="关键代码示例"><a href="#关键代码示例" class="headerlink" title="关键代码示例"></a>关键代码示例</h2><h3 id="预处理阶段"><a href="#预处理阶段" class="headerlink" title="预处理阶段"></a>预处理阶段</h3><p>在下载前预创建目标文件，并将已有的临时文件写入到目标文件中，这样得到的新文件的大小作为本地请求Range参数的起始点，当然第一次开始是preSize的大小是0。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">// 目标地址</span><br><span class="line">const filePath = &apos;xxxxx`; </span><br><span class="line">// 临时文件</span><br><span class="line">const tmpFilePath = &apos;xxxxx.tmp&apos; </span><br><span class="line"></span><br><span class="line">// 预创建文件</span><br><span class="line">if (!await fs.exists(filePath)) &#123;</span><br><span class="line">    await fs.createFile(filePath, &apos;&apos;, &apos;utf8&apos;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 将临时文件合并至正式文件</span><br><span class="line">if (await fs.exists(tmpFilePath)) &#123;</span><br><span class="line">    let tmpFile = await fs.stat(tmpFilePath);</span><br><span class="line">    tmpFile &amp;&amp; await fs.appendFile(filePath, tmpFilePath, &apos;uri&apos;);</span><br><span class="line">    // 删除临时文件</span><br><span class="line">    await fs.unlink(tmpFilePath)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 获取已下载文件大小 确定继续下载文件的范围</span><br><span class="line">let fileStat = await fs.stat(filePath);</span><br><span class="line">const preSize = fileStat.size;</span><br></pre></td></tr></table></figure></p>
+<h3 id="下载阶段"><a href="#下载阶段" class="headerlink" title="下载阶段"></a>下载阶段</h3><p>下载阶段可以设置RNFetchBlob对应参数fileCache和Header信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">RNFetchBlob.config(&#123;</span><br><span class="line">    path: tmpFilePath,</span><br><span class="line">    fileCache: true, // 流式下载</span><br><span class="line">&#125;).fetch(&apos;GET&apos;, url, &#123;</span><br><span class="line">    Range: `bytes=$&#123;preSize&#125;-` // 从未下载部分开始下载</span><br><span class="line">&#125;).progress((received, total) =&gt; &#123;</span><br><span class="line">    console.log(&apos;progress&apos;, received / total)</span><br><span class="line">&#125;).then((result) =&gt; &#123;</span><br><span class="line">  // 下载成功</span><br><span class="line">&#125;).catch((error) =&gt; &#123;</span><br><span class="line">  // 下载失败</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<h3 id="下载后处理"><a href="#下载后处理" class="headerlink" title="下载后处理"></a>下载后处理</h3><p>下载后需要最后将文件追加至目标文件，并最好对最终文件的大小进行校验，和清除临时文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">await fs.appendFile(filePath, res.path(), &apos;uri&apos;);</span><br><span class="line">fs.unlink(tmpFilePath); </span><br><span class="line"></span><br><span class="line">fileStat = await fs.stat(filePath);</span><br><span class="line">// 校验文件大小</span><br><span class="line">if(fileStat.size !== FILE_SIZE)&#123;</span><br><span class="line">    // 删除错误文件  </span><br><span class="line">    fs.unlink(fileStat.path)；</span><br><span class="line">&#125;else&#123;</span><br><span class="line">    // 下载成功</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="可能遇到的问题"><a href="#可能遇到的问题" class="headerlink" title="可能遇到的问题"></a>可能遇到的问题</h2><h3 id="RN-Fetch-Blob-将错误的请求信息存入文件"><a href="#RN-Fetch-Blob-将错误的请求信息存入文件" class="headerlink" title="RN-Fetch-Blob 将错误的请求信息存入文件"></a>RN-Fetch-Blob 将错误的请求信息存入文件</h3><p>RN-Fetch-Blob处理文件时不会识别请求的状态吗，如果资源文件的地址范围的是非资源文件而是一些4xx、5xx的异常状态码时，它会简单粗暴地将报错信息直接写入文件，不会报错。</p>
+<h3 id="请求的范围越界问题"><a href="#请求的范围越界问题" class="headerlink" title="请求的范围越界问题"></a>请求的范围越界问题</h3><p>举个例子如果目标文件的大小是1024个字节，那么有效的范围是Range: bytes=0-1023，如果出现范围越界的问题接口将返回416 Requested Range Not Satisfiable （请求的范围无法满足）状态码 。同样RN-Fetch-Blob也会把这一状态码的报错信息直接写入文件而不会报错。</p>
+<h3 id="下载是内存占用过高问题"><a href="#下载是内存占用过高问题" class="headerlink" title="下载是内存占用过高问题"></a>下载是内存占用过高问题</h3><p>RN-Fetch-Blob虽然采用流式下载，但是下载过程中文件却也会占用大量的内存资源，过大的文件，可能因为内存占用过高而导致异常，可以将下载任务按照指定的大小拆分多个下载任务，每个任务指定不同的Range Header，最后拼接在一起，这样就可以避免单个大文件下载占用较大的内存问题。</p>
+<h3 id="IOS-沙盒路径问题"><a href="#IOS-沙盒路径问题" class="headerlink" title="IOS 沙盒路径问题"></a>IOS 沙盒路径问题</h3><p>这里遇到了一个很严重的问题，IOS APP更新后发现所有已下载的文件都找不到了。原来文件下载后通过AsyncStorage存储了文件完整的绝对路径，而IOS每次更新后都会变化新的沙盒根目录，所以导致原本保存的文件路径不存在，解决办法就是每次重新沙盒根目录。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Range" rel="external nofollow noopener noreferrer" target="_blank">HTTP Header Range</a></li>
+<li><a href="https://viblo.asia/p/use-rn-fetch-blob-to-download-background-and-resume-a-file-in-react-native-on-ios-and-android-3P0lP4Wvlox" rel="external nofollow noopener noreferrer" target="_blank">Use rn-fetch-blob to download</a></li>
+<li><a href="https://www.shuzhiduo.com/A/amd0MX7Wzg/" rel="external nofollow noopener noreferrer" target="_blank">iOS沙盒路径变化的说明详解</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/article/react-native/mix-dev/" rel="next" title="React Native混合开发详解">
+                <i class="fa fa-chevron-left"></i> React Native混合开发详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="羽翼">
+            
+              <p class="site-author-name" itemprop="name">羽翼</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#核心技术方案"><span class="nav-number">1.</span> <span class="nav-text">核心技术方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Async-Storage"><span class="nav-number">1.1.</span> <span class="nav-text">Async Storage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RN-Fetch-Blob"><span class="nav-number">1.2.</span> <span class="nav-text">RN-Fetch-Blob</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Request-Header-Range参数"><span class="nav-number">1.3.</span> <span class="nav-text">Request Header Range参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现思路"><span class="nav-number">2.</span> <span class="nav-text">实现思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关键代码示例"><span class="nav-number">3.</span> <span class="nav-text">关键代码示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#预处理阶段"><span class="nav-number">3.1.</span> <span class="nav-text">预处理阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下载阶段"><span class="nav-number">3.2.</span> <span class="nav-text">下载阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下载后处理"><span class="nav-number">3.3.</span> <span class="nav-text">下载后处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可能遇到的问题"><span class="nav-number">4.</span> <span class="nav-text">可能遇到的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RN-Fetch-Blob-将错误的请求信息存入文件"><span class="nav-number">4.1.</span> <span class="nav-text">RN-Fetch-Blob 将错误的请求信息存入文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#请求的范围越界问题"><span class="nav-number">4.2.</span> <span class="nav-text">请求的范围越界问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下载是内存占用过高问题"><span class="nav-number">4.3.</span> <span class="nav-text">下载是内存占用过高问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IOS-沙盒路径问题"><span class="nav-number">4.4.</span> <span class="nav-text">IOS 沙盒路径问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">羽翼</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io" rel="external nofollow noopener noreferrer">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow noopener noreferrer">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

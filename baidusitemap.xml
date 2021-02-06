@@ -1,15 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://fengwc.cn/article/react-native/file-download/</loc>
+    <lastmod>2021-02-06</lastmod>
+  </url>
+  <url>
+    <loc>http://fengwc.cn/article/react-native/learn/</loc>
+    <lastmod>2021-02-06</lastmod>
+  </url>
+  <url>
+    <loc>http://fengwc.cn/article/react-native/start/</loc>
+    <lastmod>2021-02-06</lastmod>
+  </url>
+  <url>
+    <loc>http://fengwc.cn/article/react-native/mix-dev/</loc>
+    <lastmod>2021-02-06</lastmod>
+  </url>
+  <url>
     <loc>http://fengwc.cn/article/docker-fe/</loc>
     <lastmod>2020-08-24</lastmod>
   </url>
   <url>
-    <loc>http://fengwc.cn/article/web-component/</loc>
+    <loc>http://fengwc.cn/article/spatial-data-to-circle/</loc>
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
-    <loc>http://fengwc.cn/article/vue-mapboxgl/</loc>
+    <loc>http://fengwc.cn/article/web-component/</loc>
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
@@ -17,7 +33,11 @@
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
-    <loc>http://fengwc.cn/article/spatial-data-to-circle/</loc>
+    <loc>http://fengwc.cn/article/vue-mapboxgl/</loc>
+    <lastmod>2020-08-18</lastmod>
+  </url>
+  <url>
+    <loc>http://fengwc.cn/article/post-content-type/</loc>
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
@@ -29,23 +49,11 @@
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
-    <loc>http://fengwc.cn/article/post-content-type/</loc>
-    <lastmod>2020-08-18</lastmod>
-  </url>
-  <url>
     <loc>http://fengwc.cn/article/mapboxgl-load-online-tile/</loc>
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
     <loc>http://fengwc.cn/article/nginx-proxy/</loc>
-    <lastmod>2020-08-18</lastmod>
-  </url>
-  <url>
-    <loc>http://fengwc.cn/article/linux-dd/</loc>
-    <lastmod>2020-08-18</lastmod>
-  </url>
-  <url>
-    <loc>http://fengwc.cn/article/image-to-base64/</loc>
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
@@ -57,7 +65,15 @@
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
+    <loc>http://fengwc.cn/article/linux-dd/</loc>
+    <lastmod>2020-08-18</lastmod>
+  </url>
+  <url>
     <loc>http://fengwc.cn/article/http2-faster-web/</loc>
+    <lastmod>2020-08-18</lastmod>
+  </url>
+  <url>
+    <loc>http://fengwc.cn/article/image-to-base64/</loc>
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
