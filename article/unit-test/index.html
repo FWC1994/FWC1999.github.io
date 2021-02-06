@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Mocha,Sinon,Chai,Istanbul,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="最近在做一些代码重构的工作，为了保证代码的质量，特意花了些时间把重构的代码添加了单元测试。这里就跟大家分享下，这段时间写单元测试的一些收获和感受。">
+<meta name="keywords" content="Mocha,Sinon,Chai,Istanbul">
+<meta property="og:type" content="article">
+<meta property="og:title" content="聊一聊单元测试">
+<meta property="og:url" content="http://fengwc.cn/article/unit-test/index.html">
+<meta property="og:site_name" content="╰ 羽翼 ╮的博客">
+<meta property="og:description" content="最近在做一些代码重构的工作，为了保证代码的质量，特意花了些时间把重构的代码添加了单元测试。这里就跟大家分享下，这段时间写单元测试的一些收获和感受。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://fengwc.cn/images/article/我心目中的单元测试/istanbul.png">
+<meta property="og:updated_time" content="2020-08-18T07:55:03.715Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="聊一聊单元测试">
+<meta name="twitter:description" content="最近在做一些代码重构的工作，为了保证代码的质量，特意花了些时间把重构的代码添加了单元测试。这里就跟大家分享下，这段时间写单元测试的一些收获和感受。">
+<meta name="twitter:image" content="http://fengwc.cn/images/article/我心目中的单元测试/istanbul.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://fengwc.cn/article/unit-test/">
+
+
+
+
+
+  <title>聊一聊单元测试 | ╰ 羽翼 ╮的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">╰ 羽翼 ╮的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fengwc.cn/article/unit-test/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="羽翼">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="╰ 羽翼 ╮的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">聊一聊单元测试</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-08T01:22:48+08:00">
+                2020-03-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/单元测试/" itemprop="url" rel="index">
+                    <span itemprop="name">单元测试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近在做一些代码重构的工作，为了保证代码的质量，特意花了些时间把重构的代码添加了单元测试。这里就跟大家分享下，这段时间写单元测试的一些收获和感受。<br><a id="more"></a></p>
+<style>
+img {
+  width: 500px;
+}
+</style>
+
+<h2 id="对于单元测试的理解"><a href="#对于单元测试的理解" class="headerlink" title="对于单元测试的理解"></a>对于单元测试的理解</h2><p>个人对于单元测试的定义是：程序自身开发者对于程序最小独立单元，通过程序模拟各种异常和边界条件，自动检测代码的执行结果是否符合预期。以保证程序质量，较少后期维护测试成本的一个过程。<br>所以单元测试具有以下的特征：</p>
+<ol>
+<li>单元测试是程序员自己写的😁，不应该逃避的。</li>
+<li>为了保证测试单元的独立性，要尽可能保证代码高内聚、低耦合。</li>
+<li>单元测试不能只测试正确的结果，要通过测试用例让程序报错。</li>
+<li>测试的过程不能有人工去参与，输入和输出不能手动去进行。</li>
+<li>写单元测试可能会花费很多时间，但是从长远来看利大于弊。</li>
+</ol>
+<h2 id="单元测试实践"><a href="#单元测试实践" class="headerlink" title="单元测试实践"></a>单元测试实践</h2><p>在一个系统的开发中，后端接口的设计和稳定性极为重要，因为后端的接口一旦出现问题，将可能会影响到多个前端模块。同时因为每个接口的逻辑的单一性，后端接口也是比较容易进行单元测试的，服务的状态、参数的合法性、返回的数据格式、核心业务逻辑、数据库异常报错时的特殊处理都是单元测试应该覆盖到的点。</p>
+<p>这里的一个单元测试实践的整体方案是：基于Koa2的Nodejs服务端代码，采用Mocha单元测试框架，使用Chai来进行断言验证、Sinon来Mock数据库等依赖环境，最后使用Istanbul来计算单元测试的覆盖度。</p>
+<ul>
+<li><strong>Mocha</strong><br>Mocha是一个具有丰富特性的JavaScript框架，使用起来非常简单。</li>
+<li><strong>Chai</strong><br>Chai是一个使用最多的nodejs断言库，支持Should、Expect这种BDD风格的单元测试，也支持Assert这种TDD的单元测试风格，使用者可以根据自己的偏好进行选择。</li>
+<li><strong>Sinon</strong><br>单元测试时屏蔽掉测试单元中对于外部环境的依赖，Sinon就是解决这个问题，Sinon可以使用spy、stub、mock等方法监听或模拟替代接口返回结果。并且Sinon可以很好地与各种单元测试框架进行集成。</li>
+<li><strong>Istanbul</strong><br>Istanbul是一个单元测试覆盖度的计算工具，分别统计的是语句覆盖度、分支覆盖度、函数覆盖度和文件行数覆盖度、并且可以看到哪些行单元测试没有覆盖。<br><img src="../../images/article/我心目中的单元测试/istanbul.png" alt></li>
+</ul>
+<p>不过Istanbul仅支持ES5和ES2015+的JavaScript代码、所以对于使用了ES6的代码则需要使用<a href="https://github.com/istanbuljs/nyc" rel="external nofollow noopener noreferrer" target="_blank">Istanbul/nyc</a></p>
+<h2 id="怎么最大化的发挥单元测试作用"><a href="#怎么最大化的发挥单元测试作用" class="headerlink" title="怎么最大化的发挥单元测试作用"></a>怎么最大化的发挥单元测试作用</h2><p>大家都知道单元测试的重要性，但是怎么来写单元测试才能更好地发挥出单元测试的价值呢？在这里通过几个问题来聊一聊这个话题：</p>
+<ul>
+<li><strong>单元测试的覆盖率是越高越好吗？</strong></li>
+</ul>
+<p>如果单纯考虑覆盖度这一个因素的话，那单元测试的覆盖度当然是越高越好。但是也不能一味的追求单元测试的覆盖度，在有些项目中，开发人员可能会说我们的代码单元测试覆盖度为100%，但是那又能说明什么问题，即使单元测试覆盖度完全覆盖，也不能保证写出来的代码质量很高同时完全没有bug。单元测试只是一个帮助你提升代码质量的一个辅助手段，并不是一个银弹。业界标准通常在 80% 左右。过分的准求单元测试的覆盖度，可能在单元测试上付出很大的代价和成本。</p>
+<ul>
+<li><strong>该在什么时候写单元测试？</strong></li>
+</ul>
+<p>写代码，一时爽，一直写，一直爽。但是等到领导告诉你代码写单元测试的时候，就非常不爽了，因为一下子面对那么多的单元测试，谁面对都会很头疼。等功能都开发完成了再去补充单元测试，这样的单元测试起不到太多的作用。首先是心态上肯定有抵触心理，把单元测试当成一项煎熬的任务，这样的单元测试质量也不会很高。那么应该在什么时候写单元测试呢？—— 与开发同时进行，开发之前写单元测试叫测试驱动开发（TDD），但是这种方式韩式有一定事件难度的。所以比较可行的是一边开发一边写单元测试，通过单元测试来测试程序。这样的好处是你会随时之一代码结构的合理性，因为只有程序代码单元，高内聚、低耦合你在写单元测试的时候就会非常舒服。</p>
+<ul>
+<li><strong>测试用例该怎么写？</strong></li>
+</ul>
+<p>首先在写单元测试的顺序上，通常使用的是一种自底向上的策略，就是先对底层的单元进行单元测试，然后逐层向上，直至完成了所有的单元测试。这种方法可以节省桩单元（Stub）的开发，提升测试效率。<br>然后单元测试也不能只去跑那些正确的逻辑，也要用一些测试用例覆盖那些对于错误和异常的处理，对于一些循环的边界条件也要覆盖。</p>
+<h2 id="感受和总结"><a href="#感受和总结" class="headerlink" title="感受和总结"></a>感受和总结</h2><p>“单元测试永远无法证明代码的正确性!!”<br>“一个跑失败的测试可能表明代码有错误, 但一个跑成功的测试什么也证明不了.”<br>你可能没有办法一下子爱上单元测试，但是时间会证明单元测试的价值。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] <a href="https://github.com/yangyubo/zh-unit-testing-guidelines#id6" rel="external nofollow noopener noreferrer" target="_blank">Geotechnical 单元测试指南 - 中文版</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Mocha/" rel="tag"># Mocha</a>
+          
+            <a href="/tags/Sinon/" rel="tag"># Sinon</a>
+          
+            <a href="/tags/Chai/" rel="tag"># Chai</a>
+          
+            <a href="/tags/Istanbul/" rel="tag"># Istanbul</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/article/post-content-type/" rel="next" title="POST请求的编码方式">
+                <i class="fa fa-chevron-left"></i> POST请求的编码方式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/article/http2-faster-web/" rel="prev" title="【译】HTTP/2 为更快速的网站而生">
+                【译】HTTP/2 为更快速的网站而生 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="羽翼">
+            
+              <p class="site-author-name" itemprop="name">羽翼</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#对于单元测试的理解"><span class="nav-number">1.</span> <span class="nav-text">对于单元测试的理解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单元测试实践"><span class="nav-number">2.</span> <span class="nav-text">单元测试实践</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#怎么最大化的发挥单元测试作用"><span class="nav-number">3.</span> <span class="nav-text">怎么最大化的发挥单元测试作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#感受和总结"><span class="nav-number">4.</span> <span class="nav-text">感受和总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">羽翼</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io" rel="external nofollow noopener noreferrer">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow noopener noreferrer">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

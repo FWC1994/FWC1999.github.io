@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="HTTP/2,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="img {  width: 400px;}最近在做一个内部的服务对接，使用了Google的gRPC框架，gRPC是基于HTTP/2和protocol buffers实现的，所以额外去了解了一下HTTP/2，找到这这边文章。这篇文章虽然是写于2015年时间比较久远，但是对于HTTP/2的介绍很全面，于是花了些时间翻译了一下。">
+<meta name="keywords" content="HTTP&#x2F;2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【译】HTTP&#x2F;2 为更快速的网站而生">
+<meta property="og:url" content="http://fengwc.cn/article/http2-faster-web/index.html">
+<meta property="og:site_name" content="╰ 羽翼 ╮的博客">
+<meta property="og:description" content="img {  width: 400px;}最近在做一个内部的服务对接，使用了Google的gRPC框架，gRPC是基于HTTP/2和protocol buffers实现的，所以额外去了解了一下HTTP/2，找到这这边文章。这篇文章虽然是写于2015年时间比较久远，但是对于HTTP/2的介绍很全面，于是花了些时间翻译了一下。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://fengwc.cn/images/article/http2/http1-1e8d6f2a.png">
+<meta property="og:image" content="http://fengwc.cn/images/article/http2/http1-vs-http2-09a032a2.png">
+<meta property="og:updated_time" content="2020-08-18T07:55:03.713Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【译】HTTP&#x2F;2 为更快速的网站而生">
+<meta name="twitter:description" content="img {  width: 400px;}最近在做一个内部的服务对接，使用了Google的gRPC框架，gRPC是基于HTTP/2和protocol buffers实现的，所以额外去了解了一下HTTP/2，找到这这边文章。这篇文章虽然是写于2015年时间比较久远，但是对于HTTP/2的介绍很全面，于是花了些时间翻译了一下。">
+<meta name="twitter:image" content="http://fengwc.cn/images/article/http2/http1-1e8d6f2a.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://fengwc.cn/article/http2-faster-web/">
+
+
+
+
+
+  <title>【译】HTTP/2 为更快速的网站而生 | ╰ 羽翼 ╮的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">╰ 羽翼 ╮的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fengwc.cn/article/http2-faster-web/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="羽翼">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="╰ 羽翼 ╮的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">【译】HTTP/2 为更快速的网站而生</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-09T01:22:48+08:00">
+                2020-03-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><style><br>img {<br>  width: 400px;<br>}<br></style><br>最近在做一个内部的服务对接，使用了Google的gRPC框架，gRPC是基于HTTP/2和protocol buffers实现的，所以额外去了解了一下HTTP/2，找到这这边文章。这篇文章虽然是写于2015年时间比较久远，但是对于HTTP/2的介绍很全面，于是花了些时间翻译了一下。</p>
+<a id="more"></a>
+<h2 id="HTTP-2-诞生的意义"><a href="#HTTP-2-诞生的意义" class="headerlink" title="HTTP/2 诞生的意义"></a>HTTP/2 诞生的意义</h2><p>国际互联网工程任务组（The Internet Engineering Task Force，简称 IETF）在2015年2月通过了HTTP/2标准，自从1999年HTTP/1.1被列为标准后，HTTP/2是对HTTP(Hypertext Transfer Protocol)第一个大版本的更新。HTTP/2可以与HTTP/1.1高度兼容，但是却有更低的延迟。总而言之，HTTP/2就是为更快速的网站而生。</p>
+<h2 id="起源于SPDY"><a href="#起源于SPDY" class="headerlink" title="起源于SPDY"></a>起源于SPDY</h2><p>自从2009年底Google开发一个实验性质的协议SPDY(pronounced speedy)，SPDY是Google的一个标志并不是一个缩写。HTTP/2期初是就以SPDY的实验特性为基础的。实际上，很多SPDY的核心开发者都参与了HTTP/2的研发工作。直到2015年2月，Google宣布SPDY将被废弃，并主推HTTP/2，并在2016年完全替代。</p>
+<h2 id="HTTP-1-1"><a href="#HTTP-1-1" class="headerlink" title="HTTP/1.1"></a>HTTP/1.1</h2><p>从1999年起，HTTP/1.1就已经开始为我们提供服务，HTTP/1.1的设计就是为众多的电脑终端使用互联网。不得不说，HTTP等一个革新实在是太久了。为了辅助理解HTTP/1的工作原理，我这里列举了一些图片。图片中的需要展示的是一个客户端（可能是个浏览器），如何与一个图片右侧服务器建立HTTP/1连接的。<br><img src="../../images/article/http2/http1-1e8d6f2a.png" alt><br>② 浏览器客户端发送一个http get请求去获取一个网站的index.html页面。<br>③ 表示服务端返回请求的资源<br>④-⑦ 在这个简单的例子中，浏览器客户端不断地发送请求和获取response，加载样式和脚本文件来渲染和处理HTML文档。<br>⑧ 最后HTTP/1连接关闭。</p>
+<h2 id="队头阻塞（Head-of-Line-Blocking）"><a href="#队头阻塞（Head-of-Line-Blocking）" class="headerlink" title="队头阻塞（Head-of-Line Blocking）"></a>队头阻塞（Head-of-Line Blocking）</h2><p>正如你所见的，浏览器客户端浪费了大量的时间等待资源返回。主要是因为HTTP/1无法通过单一的连接来进行并发的请求，所以浏览器通常情况下采用打开多个连接的方式来加速获取资源的进程。</p>
+<h2 id="奢侈的连接"><a href="#奢侈的连接" class="headerlink" title="奢侈的连接"></a>奢侈的连接</h2><p>然而使用打开多个连接来辅助加速的方式，从计算机网络的角度来看，每打开一个连接都是非常奢侈的。由于建立连接的花销非常大，目前的浏览器都会对HTTP/1.1的最大连接数进行限制，一般为6-8个。但是很多网站，会去请求80个乃至更多的资源，因此，这个限制也会导致很大的性能瓶颈。</p>
+<h2 id="HTTP管线化-HTTP-pipelining"><a href="#HTTP管线化-HTTP-pipelining" class="headerlink" title="HTTP管线化(HTTP pipelining)"></a>HTTP管线化(HTTP pipelining)</h2><p>HTTP/1.1尝试通过HTTP管线化技术来解决这一性能瓶颈。不幸的是，一个体积很大的或慢response仍然会阻塞后面所有的请求。HTTP管线化技术并不是实施起来很困难，而是现阶段不可能实现。由于服务端中间件和服务器都不能很好的支持HTTP管线化，所以也没有任何一个浏览器去支持这一技术。</p>
+<h2 id="HTTP-2多路复用"><a href="#HTTP-2多路复用" class="headerlink" title="HTTP/2多路复用"></a>HTTP/2多路复用</h2><p>多路复用允许多个request-response消息通过一个HTTP/2连接进行传输，同时为了展示HTTP/2有多高效，我准备了一个图片和HTTP/1进行对比。还是相同的配方，我们来看看在HTTP/2的支持下页面有多快开始进行渲染。</p>
+<p>设想一下，如果对比的是一个更常见的一个场景80个请求需要请求的时候，通过HTTP/1.1每次建立6-8个连接去处理和HTTP/2通过一个连接就可以获取所有的请求，结果一目了然。<br><img src="../../images/article/http2/http1-vs-http2-09a032a2.png" alt></p>
+<h2 id="其他的HTTP-2性能优化点"><a href="#其他的HTTP-2性能优化点" class="headerlink" title="其他的HTTP/2性能优化点"></a>其他的HTTP/2性能优化点</h2><p>除了多路复用之外，HTTP/2使用的是二进制传输而不是像HTTP/1使用文本。相较于文本协议，二进制解析起来更加的高效，具有更高的压缩率，且更不容易出错。</p>
+<p>HTTP/2对请求的头部信息进行了压缩，这些都是HTTP/1所欠缺的。</p>
+<h2 id="服务端推（Server-Push）"><a href="#服务端推（Server-Push）" class="headerlink" title="服务端推（Server Push）"></a>服务端推（Server Push）</h2><p>服务端推是HTTP/2的一个机制，服务端可以主动发送数据而不需要客户端的请求。举个例子，如果一个请求获取你的网站首页，服务端将会吧首页连带着logo和样式文件等一并返回，因为服务端知道这些文件客户端将会需要。这种机制的本质相当于，将这些资源与DOM文档进行内部关联，除此之外，推送的资源将会在客户端进行缓存。</p>
+<p>服务端推技术的一个缺点是：当客户端已经缓存了资源就会造成资源浪费，这也是为什么我推荐使用服务端暗示（Server Hints）。</p>
+<h2 id="服务端暗示（Server-Hints）"><a href="#服务端暗示（Server-Hints）" class="headerlink" title="服务端暗示（Server Hints）"></a>服务端暗示（Server Hints）</h2><p>服务端暗示技术将会在客户端请求之前对将会需求的资源进行识别。但是服务器并不会发送完整的资源内容，仅仅是发送URL。客户端之后如果需要请求这些资源会先去校验缓存，然后去请求这些资源。服务端暗示技术并不是HTTP/2的新特性，但是就像前面所描述的那样，这个技术非常值得一提的是，不会有服务端推技术可能会造成资源冗余的缺点。</p>
+<p>服务端暗示是使用HTTP Link头来实现，并且与已经存在的链接预取语义上重复。举个例子，一个HTTP Link头看起来是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Link: &lt;https://example.com/images/large-background.jpg&gt;; rel=prefetch</span><br></pre></td></tr></table></figure></p>
+<p>如果HTML文档在head标签中包含链接预取属性的link，那么则不需要服务端进行实现。例子如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;link rel=&quot;prefetch&quot; href=&quot;https://example.com/images/large-background.jpg&quot;&gt;</span><br></pre></td></tr></table></figure></p>
+<p>要了解更多关于rel=”prefetch”, 可以查看Mozilla<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Link_prefetching_FAQ" rel="external nofollow noopener noreferrer" target="_blank">链接预取FAQ</a>。</p>
+<h2 id="更新一步了解服务端暗示技术"><a href="#更新一步了解服务端暗示技术" class="headerlink" title="更新一步了解服务端暗示技术"></a>更新一步了解服务端暗示技术</h2><p>preload rel属性通过声明一个资源和它的fetch属性来实现。这个规范通过使用额外的处理策略来拓展功能，从而当下一次导航的时候可以更高效的获取资源。举个例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- fetch and preprocess for next navigation --&gt;</span><br><span class="line">&lt;link rel=&quot;preload&quot; href=&quot;//example.com/next-page.html&quot; as=&quot;html&quot; loadpolicy=&quot;next&quot;&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- fetch and do not preprocess for next navigation --&gt;</span><br><span class="line">&lt;link rel=&quot;preload&quot; href=&quot;//example.com/next-component.html&quot; as=&quot;html&quot; loadpolicy=&quot;next inert&quot;&gt;</span><br></pre></td></tr></table></figure></p>
+<p>“next inert”加载策略在一些浏览器实现上等同于rel=prefetch，”next”加载策略在一些浏览器实现语义上等同于rel=prerender。<br>该规范的实现拓展了先前的预取和预渲染功能<br>了解更多，可以查看Ilya Grigorik编辑，W3C发布的<a href="https://w3c.github.io/resource-hints" rel="external nofollow noopener noreferrer" target="_blank">Resource Hints</a></p>
+<h2 id="HTTP-2安全批评"><a href="#HTTP-2安全批评" class="headerlink" title="HTTP/2安全批评"></a>HTTP/2安全批评</h2><p>尽管HTTP/2的主要目的是使网站的速度更快，但是它也因为没有强制使用加密连接受到了大量的批评。因而领先的浏览器厂商因此很久没有去支持没有加密的HTTP/2。所以HTTP/2需要使用加密连接的方式来落地这一技术。可以来看我的另一篇文章<a href="https://cascadingmedia.com/insites/2015/01/https-everywhere.html" rel="external nofollow noopener noreferrer" target="_blank">HTTPS Everywhere</a>，除非你不认为HTTPS是未来的网站的一个很好的发展方向。</p>
+<h2 id="浏览器支持情况"><a href="#浏览器支持情况" class="headerlink" title="浏览器支持情况"></a>浏览器支持情况</h2><p>HTTP/2正在或即将被所有主流的浏览器支持<br>Chrome 40支持了HTTP/2第14草案，但是默认情况下没有启用。HTTP/2第17草案(最终草案)被Chrome Canary 43（预发布开发版）所使用。目前仅仅基于TLS（加密）的HTTP/2才被支持。<br>想要在Chrome浏览器启用启用HTTP/2，可以访问链接：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chrome://flags/#enable-spdy4</span><br></pre></td></tr></table></figure></p>
+<p>火狐浏览器已经支持了HTTP/2并且从36版本开始默认是开启的。34版本中火狐浏览器开始实验性质地支持HTTP/2。目前仅仅实施了基于TLS的HTTP/2。</p>
+<p>IE11仅仅在 Windows 10 beta版本支持HTTP/2，默认情况下是启用的，目前也是仅仅支持基于TLS的HTTP/2。<br>Spartan浏览器被期待支持基于TLS的HTTP/2，微软为Windows 10打造的新浏览器。<br>Safari在Mac OS X Yosemite (10.10)和iOS 8默认支持SPDY。预计在2015年底去全面支持HTTP/2。<br>Opera默认也是支持SPDY。一旦HTTP/2草案在Chrome浏览器中默认支持的时候，Opera也会全面支持。</p>
+<h2 id="服务端支持情况"><a href="#服务端支持情况" class="headerlink" title="服务端支持情况"></a>服务端支持情况</h2><h3 id="支持HTTP-2"><a href="#支持HTTP-2" class="headerlink" title="支持HTTP/2"></a>支持HTTP/2</h3><p>IIS (Internet Information Services) 在Windows 10 beta版本中支持HTTP/2。<br>OpenLiteSpeed在1.3.8和1.4.5中支持HTTP/2草案17.</p>
+<h3 id="支持SPDY-但是不支持HTTP-2"><a href="#支持SPDY-但是不支持HTTP-2" class="headerlink" title="支持SPDY, 但是不支持HTTP/2"></a>支持SPDY, 但是不支持HTTP/2</h3><p>Apache通过mod_spdy模块支持老版本的SPDY，但是目前这个模块已经停止开发了。<br>LiteSpeed Web Server目前支持SPDY/3.1。<br>Nginx通过模块提供实验性质的而支持SPDY (草案 3.1)，并且计划在2015年底开始支持HTTP/2。</p>
+<h3 id="没有打算支持HTTP-2的服务器"><a href="#没有打算支持HTTP-2的服务器" class="headerlink" title="没有打算支持HTTP/2的服务器"></a>没有打算支持HTTP/2的服务器</h3><p>lighttpd 在1.x的版本中没有支持SPDY或者HTTP/2的计划。</p>
+<h3 id="其他支持HTTP-2的服务器"><a href="#其他支持HTTP-2的服务器" class="headerlink" title="其他支持HTTP/2的服务器"></a>其他支持HTTP/2的服务器</h3><p>其他支持HTTP/2的比较有名的服务器可以在<a href="https://github.com/http2/http2-spec/wiki/Implementations" rel="external nofollow noopener noreferrer" target="_blank">GitHub HTTP/2 wiki</a>找到。</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>正如我们的探索，HTTP/2对于Web是一个跨世纪的更新。因此在接下来的几年里将会被更加广泛的使用，网站和其他的Web服务想比以前将会变得更快更稳定。特别感谢这些具有前瞻性的浏览器开发者，HTTP/2也会提高用户的隐私和安全性。然而还有很长的一段路要走，我认为HTTP/2是这个互联网发展迈出的一大步。</p>
+<p>如果你对于HTTP/2有任何的问题和想法，我将在我的Twitter进行回复<a href="https://twitter.com/BenjaminPatch" rel="external nofollow noopener noreferrer" target="_blank">@BenjaminPatch</a>。</p>
+<h2 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h2><p>特别感谢<a href="https://www.igvita.com/" rel="external nofollow noopener noreferrer" target="_blank">Ilya Grigorik</a>，一位Google优秀的Web性能工程师，感谢他对于这边文章提供的支持。Ilya也是《High-Performance Browser Networking》的作者，对于Web开发这来说是很好的学习网络和浏览器性能的资源。</p>
+<h2 id="原文地址"><a href="#原文地址" class="headerlink" title="原文地址"></a>原文地址</h2><p><a href="https://cascadingmedia.com/insites/2015/03/http-2.html" rel="external nofollow noopener noreferrer" target="_blank">https://cascadingmedia.com/insites/2015/03/http-2.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/HTTP-2/" rel="tag"># HTTP/2</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/article/unit-test/" rel="next" title="聊一聊单元测试">
+                <i class="fa fa-chevron-left"></i> 聊一聊单元测试
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/article/docker-fe/" rel="prev" title="前端工程师与Docker的不解之缘">
+                前端工程师与Docker的不解之缘 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="羽翼">
+            
+              <p class="site-author-name" itemprop="name">羽翼</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-2-诞生的意义"><span class="nav-number">1.</span> <span class="nav-text">HTTP/2 诞生的意义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#起源于SPDY"><span class="nav-number">2.</span> <span class="nav-text">起源于SPDY</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-1-1"><span class="nav-number">3.</span> <span class="nav-text">HTTP/1.1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#队头阻塞（Head-of-Line-Blocking）"><span class="nav-number">4.</span> <span class="nav-text">队头阻塞（Head-of-Line Blocking）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#奢侈的连接"><span class="nav-number">5.</span> <span class="nav-text">奢侈的连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP管线化-HTTP-pipelining"><span class="nav-number">6.</span> <span class="nav-text">HTTP管线化(HTTP pipelining)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-2多路复用"><span class="nav-number">7.</span> <span class="nav-text">HTTP/2多路复用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他的HTTP-2性能优化点"><span class="nav-number">8.</span> <span class="nav-text">其他的HTTP/2性能优化点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端推（Server-Push）"><span class="nav-number">9.</span> <span class="nav-text">服务端推（Server Push）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端暗示（Server-Hints）"><span class="nav-number">10.</span> <span class="nav-text">服务端暗示（Server Hints）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更新一步了解服务端暗示技术"><span class="nav-number">11.</span> <span class="nav-text">更新一步了解服务端暗示技术</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-2安全批评"><span class="nav-number">12.</span> <span class="nav-text">HTTP/2安全批评</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#浏览器支持情况"><span class="nav-number">13.</span> <span class="nav-text">浏览器支持情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端支持情况"><span class="nav-number">14.</span> <span class="nav-text">服务端支持情况</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#支持HTTP-2"><span class="nav-number">14.1.</span> <span class="nav-text">支持HTTP/2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#支持SPDY-但是不支持HTTP-2"><span class="nav-number">14.2.</span> <span class="nav-text">支持SPDY, 但是不支持HTTP/2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#没有打算支持HTTP-2的服务器"><span class="nav-number">14.3.</span> <span class="nav-text">没有打算支持HTTP/2的服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他支持HTTP-2的服务器"><span class="nav-number">14.4.</span> <span class="nav-text">其他支持HTTP/2的服务器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结语"><span class="nav-number">15.</span> <span class="nav-text">结语</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#致谢"><span class="nav-number">16.</span> <span class="nav-text">致谢</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原文地址"><span class="nav-number">17.</span> <span class="nav-text">原文地址</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">羽翼</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io" rel="external nofollow noopener noreferrer">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow noopener noreferrer">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://fengwc.cn/article/docker-fe/</loc>
+    <lastmod>2020-08-24</lastmod>
+  </url>
+  <url>
     <loc>http://fengwc.cn/article/web-component/</loc>
     <lastmod>2020-08-18</lastmod>
   </url>
@@ -17,15 +21,11 @@
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
-    <loc>http://fengwc.cn/article/nginx-proxy/</loc>
+    <loc>http://fengwc.cn/article/promise-all-muti/</loc>
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
     <loc>http://fengwc.cn/article/relearn-html-marker/</loc>
-    <lastmod>2020-08-18</lastmod>
-  </url>
-  <url>
-    <loc>http://fengwc.cn/article/promise-all-muti/</loc>
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
@@ -37,7 +37,11 @@
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
-    <loc>http://fengwc.cn/article/mac-read-ntfs/</loc>
+    <loc>http://fengwc.cn/article/nginx-proxy/</loc>
+    <lastmod>2020-08-18</lastmod>
+  </url>
+  <url>
+    <loc>http://fengwc.cn/article/linux-dd/</loc>
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
@@ -49,7 +53,7 @@
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
-    <loc>http://fengwc.cn/article/linux-dd/</loc>
+    <loc>http://fengwc.cn/article/mac-read-ntfs/</loc>
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
@@ -57,11 +61,11 @@
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
-    <loc>http://fengwc.cn/article/from-dom-to-event/</loc>
+    <loc>http://fengwc.cn/article/gcj02-bd09-wgs84-web-mecator-convert/</loc>
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
-    <loc>http://fengwc.cn/article/gcj02-bd09-wgs84-web-mecator-convert/</loc>
+    <loc>http://fengwc.cn/article/from-dom-to-event/</loc>
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
@@ -69,11 +73,11 @@
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
-    <loc>http://fengwc.cn/article/common-postgresql/</loc>
+    <loc>http://fengwc.cn/article/expect-you-vue3.0/</loc>
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>
-    <loc>http://fengwc.cn/article/expect-you-vue3.0/</loc>
+    <loc>http://fengwc.cn/article/common-postgresql/</loc>
     <lastmod>2020-08-18</lastmod>
   </url>
   <url>

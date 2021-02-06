@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="反向代理,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Nginx的反向代理对于大多数前端开发工程师再熟悉不过了，通过代理服务器的方式接收外部http请求，然后转发给内部的服务器。要进行反向代理需要预先知道服务端想要暴露的服务以及端口，然后在Nginx配置文件中添加对应的配置信息。但是如果后端的服务不是固定的，可以动态添加的，也就是说nginx要根据请求uri不同，将请求转发到不同的服务，但是又不想每次都去修改配置文件该如何去处理呢？">
+<meta name="keywords" content="反向代理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx动态反向代理">
+<meta property="og:url" content="http://fengwc.cn/article/nginx-proxy/index.html">
+<meta property="og:site_name" content="╰ 羽翼 ╮的博客">
+<meta property="og:description" content="Nginx的反向代理对于大多数前端开发工程师再熟悉不过了，通过代理服务器的方式接收外部http请求，然后转发给内部的服务器。要进行反向代理需要预先知道服务端想要暴露的服务以及端口，然后在Nginx配置文件中添加对应的配置信息。但是如果后端的服务不是固定的，可以动态添加的，也就是说nginx要根据请求uri不同，将请求转发到不同的服务，但是又不想每次都去修改配置文件该如何去处理呢？">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://fengwc.cn/images/article/Nginx动态反向代理/1.jpg">
+<meta property="og:updated_time" content="2020-08-18T07:55:03.714Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Nginx动态反向代理">
+<meta name="twitter:description" content="Nginx的反向代理对于大多数前端开发工程师再熟悉不过了，通过代理服务器的方式接收外部http请求，然后转发给内部的服务器。要进行反向代理需要预先知道服务端想要暴露的服务以及端口，然后在Nginx配置文件中添加对应的配置信息。但是如果后端的服务不是固定的，可以动态添加的，也就是说nginx要根据请求uri不同，将请求转发到不同的服务，但是又不想每次都去修改配置文件该如何去处理呢？">
+<meta name="twitter:image" content="http://fengwc.cn/images/article/Nginx动态反向代理/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://fengwc.cn/article/nginx-proxy/">
+
+
+
+
+
+  <title>Nginx动态反向代理 | ╰ 羽翼 ╮的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">╰ 羽翼 ╮的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fengwc.cn/article/nginx-proxy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="羽翼">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="╰ 羽翼 ╮的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Nginx动态反向代理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-15T07:20:29+08:00">
+                2019-11-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Nginx/" itemprop="url" rel="index">
+                    <span itemprop="name">Nginx</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Nginx的反向代理对于大多数前端开发工程师再熟悉不过了，通过代理服务器的方式接收外部http请求，然后转发给内部的服务器。要进行反向代理需要预先知道服务端想要暴露的服务以及端口，然后在Nginx配置文件中添加对应的配置信息。但是如果后端的服务不是固定的，可以动态添加的，也就是说nginx要根据请求uri不同，将请求转发到不同的服务，但是又不想每次都去修改配置文件该如何去处理呢？<br><a id="more"></a></p>
+<style>
+img {
+  width: 400px;
+}
+</style>
+
+<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><p>有人会好奇会需要这种非主流的用法，在我们的业务场景里面前端是一个统一的应用入口应用，需要在这个应用里面进入其他的应用。应用都是在客户的终端里面，每次添加新的应用很难改变里面的nginx配置。所以需要一个固定的配置，可以根据请求的Uri不同自动访问不同的应用服务。<br><img src="../../images/article/Nginx动态反向代理/1.jpg" alt></p>
+<h2 id="容器间的通信"><a href="#容器间的通信" class="headerlink" title="容器间的通信"></a>容器间的通信</h2><p>环境中所有的服务都是通过docker容器的方式进行运行，容器之间有三种互访的方式</p>
+<ul>
+<li>虚拟ip访问<br>docker会默认创建一个内部的桥接网络docker0，每创建一个容器分配一个虚拟网卡，容器之间可以根据ip互相访问</li>
+<li>link参数<br>容器运行的时候可以指定link参数 实现容器互访</li>
+<li>创建bridge网络<br>可以通过<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network create xxx</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>创建一个网络，然后在启动容器的时候指定到这个容器就能实现容器互访</p>
+<p>这里采用的是bridge的方式，bridge网络的容器之间可以通过容器名进行访问，所以nginx配置文件中可以将对应的请求通过容器名的方式反向代理到指定应用。</p>
+<h2 id="配置方法"><a href="#配置方法" class="headerlink" title="配置方法"></a>配置方法</h2><p>Nginx在配置反向代理的时候可以通过正则表达式的方式进行匹配客户端请求，然后我们只需要在配置项中解析出正则表达式的内容，代理到指定的服务即可<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">location ~ /module/([a-zA-Z-_0-9]+)/(.*)&#123;                       </span><br><span class="line">    resolver 127.0.0.11 ipv6=off;                                                     </span><br><span class="line">    proxy_pass $scheme://$1:3000/$2$is_args$query_string;       </span><br><span class="line">    proxy_set_header Host $http_host;                           </span><br><span class="line">    proxy_set_header Content-Type $http_content_type;           </span><br><span class="line">    proxy_set_header X-Real-IP $remote_addr;                    </span><br><span class="line">    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">    proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个配置文件体现的内容是将/module/xxx/index.html反向代理到xxx容器对应的服务，配置中$1和$2分别对应正则匹配中的([a-zA-Z-_0-9]+)和(.*)。</p>
+<p>这个配置里面有两个比较”坑爹”的地方</p>
+<ul>
+<li>反向代理的地址 需要通过Nginx内置预定义变量的方式补充url中请求的参数，否则服务端将无法通过？的方式获取参数。</li>
+<li>配置中需要添加<strong>resolver 127.0.0.11 ipv6=off;</strong>禁止Nginx通过IPv6 (AAAA record) 的方式解析DNS，否则由于docker网络是ipv4的网络类型，Nginx无法解析对应的服务名。</li>
+</ul>
+<h2 id="反向代理优点"><a href="#反向代理优点" class="headerlink" title="反向代理优点"></a>反向代理优点</h2><p>最后总结下使用Nginx反向代理的好处吧</p>
+<ul>
+<li>使用Nginx反向代理可以解决前端跨域问题<br>Nginx反向代理使浏览器对于后端的服务地址“看起来”和前端处于相同的域下，不会产生跨域。</li>
+<li>隐藏服务端信息，安全性高<br>使用反向代理服务器不需要每个服务的端口都对外部暴露，只需要暴露22端口即可，同时统一的配置可以隐藏服务端细节，降低服务器被攻击的概率。</li>
+<li>负载均衡<br>以反向代理为基础的负载均衡可以合理分配流量，降低单点服务器的压力。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/反向代理/" rel="tag"># 反向代理</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/article/web-component/" rel="next" title="Web Components初体验">
+                <i class="fa fa-chevron-left"></i> Web Components初体验
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/article/fix-win10-dns/" rel="prev" title="记录一次Windows10中局域网设备名无法解析问题解决过程">
+                记录一次Windows10中局域网设备名无法解析问题解决过程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="羽翼">
+            
+              <p class="site-author-name" itemprop="name">羽翼</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用场景"><span class="nav-number">1.</span> <span class="nav-text">使用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#容器间的通信"><span class="nav-number">2.</span> <span class="nav-text">容器间的通信</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置方法"><span class="nav-number">3.</span> <span class="nav-text">配置方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反向代理优点"><span class="nav-number">4.</span> <span class="nav-text">反向代理优点</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">羽翼</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io" rel="external nofollow noopener noreferrer">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow noopener noreferrer">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
