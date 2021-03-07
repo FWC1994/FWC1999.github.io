@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="反向代理,">
+  <meta name="keywords" content="三点估算,">
 
 
 
@@ -79,20 +79,20 @@
 
 
 
-<meta name="description" content="Nginx的反向代理对于大多数前端开发工程师再熟悉不过了，通过代理服务器的方式接收外部http请求，然后转发给内部的服务器。要进行反向代理需要预先知道服务端想要暴露的服务以及端口，然后在Nginx配置文件中添加对应的配置信息。但是如果后端的服务不是固定的，可以动态添加的，也就是说nginx要根据请求uri不同，将请求转发到不同的服务，但是又不想每次都去修改配置文件该如何去处理呢？">
-<meta name="keywords" content="反向代理">
+<meta name="description" content="开发人员在进行开发工作之前都需要给出一个工作量的评估，以便后续的工作任务可以基于该时间进行排期。大多数开发人员评估工作量主要是基于过往的工作经验拍脑袋决定，并会给自己预留出一定的Buffer时间。这样可能的问题就是过度依赖个人的开发经验，且Buffer时间的没办法量化。我们需要一种科学的工作量评估方法——三点估算。">
+<meta name="keywords" content="三点估算">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Nginx动态反向代理">
-<meta property="og:url" content="http://fengwc.cn/article/nginx-proxy/index.html">
+<meta property="og:title" content="三点估算评估开发工作量">
+<meta property="og:url" content="http://fengwc.cn/article/three-evaluate/index.html">
 <meta property="og:site_name" content="╰ 羽翼 ╮的博客">
-<meta property="og:description" content="Nginx的反向代理对于大多数前端开发工程师再熟悉不过了，通过代理服务器的方式接收外部http请求，然后转发给内部的服务器。要进行反向代理需要预先知道服务端想要暴露的服务以及端口，然后在Nginx配置文件中添加对应的配置信息。但是如果后端的服务不是固定的，可以动态添加的，也就是说nginx要根据请求uri不同，将请求转发到不同的服务，但是又不想每次都去修改配置文件该如何去处理呢？">
+<meta property="og:description" content="开发人员在进行开发工作之前都需要给出一个工作量的评估，以便后续的工作任务可以基于该时间进行排期。大多数开发人员评估工作量主要是基于过往的工作经验拍脑袋决定，并会给自己预留出一定的Buffer时间。这样可能的问题就是过度依赖个人的开发经验，且Buffer时间的没办法量化。我们需要一种科学的工作量评估方法——三点估算。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://fengwc.cn/images/article/Nginx动态反向代理/1.jpg">
-<meta property="og:updated_time" content="2020-08-18T07:55:03.714Z">
+<meta property="og:image" content="http://fengwc.cn/article/images/article/三点估算评估开发工作量/2.png">
+<meta property="og:updated_time" content="2021-03-07T05:28:28.223Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Nginx动态反向代理">
-<meta name="twitter:description" content="Nginx的反向代理对于大多数前端开发工程师再熟悉不过了，通过代理服务器的方式接收外部http请求，然后转发给内部的服务器。要进行反向代理需要预先知道服务端想要暴露的服务以及端口，然后在Nginx配置文件中添加对应的配置信息。但是如果后端的服务不是固定的，可以动态添加的，也就是说nginx要根据请求uri不同，将请求转发到不同的服务，但是又不想每次都去修改配置文件该如何去处理呢？">
-<meta name="twitter:image" content="http://fengwc.cn/images/article/Nginx动态反向代理/1.jpg">
+<meta name="twitter:title" content="三点估算评估开发工作量">
+<meta name="twitter:description" content="开发人员在进行开发工作之前都需要给出一个工作量的评估，以便后续的工作任务可以基于该时间进行排期。大多数开发人员评估工作量主要是基于过往的工作经验拍脑袋决定，并会给自己预留出一定的Buffer时间。这样可能的问题就是过度依赖个人的开发经验，且Buffer时间的没办法量化。我们需要一种科学的工作量评估方法——三点估算。">
+<meta name="twitter:image" content="http://fengwc.cn/article/images/article/三点估算评估开发工作量/2.png">
 
 
 
@@ -122,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://fengwc.cn/article/nginx-proxy/">
+  <link rel="canonical" href="http://fengwc.cn/article/three-evaluate/">
 
 
 
 
 
-  <title>Nginx动态反向代理 | ╰ 羽翼 ╮的博客</title>
+  <title>三点估算评估开发工作量 | ╰ 羽翼 ╮的博客</title>
   
 
 
@@ -255,7 +255,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://fengwc.cn/article/nginx-proxy/">
+    <link itemprop="mainEntityOfPage" href="http://fengwc.cn/article/three-evaluate/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="羽翼">
@@ -272,7 +272,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Nginx动态反向代理</h1>
+          <h1 class="post-title" itemprop="name headline">三点估算评估开发工作量</h1>
         
 
         <div class="post-meta">
@@ -284,8 +284,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-15T07:20:29+08:00">
-                2019-11-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-23T00:00:00+08:00">
+                2020-02-23
               </time>
             
 
@@ -307,8 +307,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Nginx/" itemprop="url" rel="index">
-                    <span itemprop="name">Nginx</span>
+                  <a href="/categories/项目管理/" itemprop="url" rel="index">
+                    <span itemprop="name">项目管理</span>
                   </a>
                 </span>
 
@@ -344,36 +344,23 @@
       
 
       
-        <p>Nginx的反向代理对于大多数前端开发工程师再熟悉不过了，通过代理服务器的方式接收外部http请求，然后转发给内部的服务器。要进行反向代理需要预先知道服务端想要暴露的服务以及端口，然后在Nginx配置文件中添加对应的配置信息。但是如果后端的服务不是固定的，可以动态添加的，也就是说nginx要根据请求uri不同，将请求转发到不同的服务，但是又不想每次都去修改配置文件该如何去处理呢？<br><a id="more"></a></p>
-<style>
-img {
-  width: 400px;
-}
-</style>
-
-<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><p>有人会好奇会需要这种非主流的用法，在我们的业务场景里面前端是一个统一的应用入口应用，需要在这个应用里面进入其他的应用。应用都是在客户的终端里面，每次添加新的应用很难改变里面的nginx配置。所以需要一个固定的配置，可以根据请求的Uri不同自动访问不同的应用服务。<br><img src="../../images/article/Nginx动态反向代理/1.jpg" alt></p>
-<h2 id="容器间的通信"><a href="#容器间的通信" class="headerlink" title="容器间的通信"></a>容器间的通信</h2><p>环境中所有的服务都是通过docker容器的方式进行运行，容器之间有三种互访的方式</p>
-<ul>
-<li>虚拟ip访问<br>docker会默认创建一个内部的桥接网络docker0，每创建一个容器分配一个虚拟网卡，容器之间可以根据ip互相访问</li>
-<li>link参数<br>容器运行的时候可以指定link参数 实现容器互访</li>
-<li>创建bridge网络<br>可以通过<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network create xxx</span><br></pre></td></tr></table></figure>
-</li>
+        <p>开发人员在进行开发工作之前都需要给出一个工作量的评估，以便后续的工作任务可以基于该时间进行排期。大多数开发人员评估工作量主要是基于过往的工作经验拍脑袋决定，并会给自己预留出一定的Buffer时间。这样可能的问题就是过度依赖个人的开发经验，且Buffer时间的没办法量化。我们需要一种科学的工作量评估方法——三点估算。</p>
+<a id="more"></a>
+<h2 id="详解三点估算"><a href="#详解三点估算" class="headerlink" title="详解三点估算"></a>详解三点估算</h2><h3 id="什么是三点估算"><a href="#什么是三点估算" class="headerlink" title="什么是三点估算"></a>什么是三点估算</h3><p>先来介绍一下什么是三点估算法：<br>三点法评估需要将一个任务的时间评估分成：最乐观时间、最可能时间、最悲观时间。好比上班路上花费的时间，一般最可能花费时间是30min；乐观情况不堵车都是绿灯只需要20min，如果悲观考虑到可能赶上上班高峰，路上很堵则需要50min才能到公司。<br>将工作量模拟成正态分布的形式。那么就可以得到如下的公式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">期望值μ = (最乐观时间 + 4 x 最可能时间 + 最悲观时间) ➗ 6</span><br><span class="line">标准差σ= (最悲观时间 - 最乐观时间) ➗ 6</span><br></pre></td></tr></table></figure></p>
+<p><img src="../images/article/三点估算评估开发工作量/2.png" alt="正态分布"><br>通过计算得到的期望值μ是一个预期工作的持续时间，标准差σ代表由于开发过程中的不确定因素导致实际工期和期望工期的浮动时间。</p>
+<h3 id="Buffer时间的设定"><a href="#Buffer时间的设定" class="headerlink" title="Buffer时间的设定"></a>Buffer时间的设定</h3><p>我们先来回答一个问题：我们在计算得到的【期望值μ】之前完成开发工作的任务的概率是多少——没错，不论开发经验是否丰富都只有50%！<br>明显如果你给出一个工作量评估并跟PM说我只有50%的可能性完成，他可能会告诉你，我也有50%的可能性不给你发项目奖金。<br>学过概率论正态分布我们会知道点落在各个区间的概率存在如下规律：<br>|标准差区间    |区间概率    |完成概率|<br>|———-|——-|——-|<br>|1倍标准差    |68.3    |84.15|<br>|2倍标准差    |95.4    |97.7|<br>|3倍标准差    |99.7    |99.85|</p>
+<p>因此我们我们可以通过在计算得到的期望值的基础上适当增加标准差时间作为Buffer，来保证我们的工作可以按时交付。</p>
+<h3 id="关于三点估算的思考"><a href="#关于三点估算的思考" class="headerlink" title="关于三点估算的思考"></a>关于三点估算的思考</h3><ul>
+<li>工作评估粒度问题<br>在评估前我们都需要对当前任务进行拆分，使用三点估算我们不需要粒度拆分的很小，因为最初没办法面面俱到考虑到所有功能点，粒度维持在一个中小型独立的功能模块为宜。</li>
+<li>标准差的理解<br>数学上标准差代表着数据的稳定性，标准差越大数据波动越大，在三点估算中标准差也反映着开发者的对于当前工作熟练程度，因此，越是经验丰富在熟悉的领域最终的标准差就会越小，陌生的领域也会计算得到较大的Buffer时间，保证可以如期交付。</li>
 </ul>
-<p>创建一个网络，然后在启动容器的时候指定到这个容器就能实现容器互访</p>
-<p>这里采用的是bridge的方式，bridge网络的容器之间可以通过容器名进行访问，所以nginx配置文件中可以将对应的请求通过容器名的方式反向代理到指定应用。</p>
-<h2 id="配置方法"><a href="#配置方法" class="headerlink" title="配置方法"></a>配置方法</h2><p>Nginx在配置反向代理的时候可以通过正则表达式的方式进行匹配客户端请求，然后我们只需要在配置项中解析出正则表达式的内容，代理到指定的服务即可<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">location ~ /module/([a-zA-Z-_0-9]+)/(.*)&#123;                       </span><br><span class="line">    resolver 127.0.0.11 ipv6=off;                                                     </span><br><span class="line">    proxy_pass $scheme://$1:3000/$2$is_args$query_string;       </span><br><span class="line">    proxy_set_header Host $http_host;                           </span><br><span class="line">    proxy_set_header Content-Type $http_content_type;           </span><br><span class="line">    proxy_set_header X-Real-IP $remote_addr;                    </span><br><span class="line">    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">    proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这个配置文件体现的内容是将/module/xxx/index.html反向代理到xxx容器对应的服务，配置中$1和$2分别对应正则匹配中的([a-zA-Z-_0-9]+)和(.*)。</p>
-<p>这个配置里面有两个比较”坑爹”的地方</p>
-<ul>
-<li>反向代理的地址 需要通过Nginx内置预定义变量的方式补充url中请求的参数，否则服务端将无法通过？的方式获取参数。</li>
-<li>配置中需要添加<strong>resolver 127.0.0.11 ipv6=off;</strong>禁止Nginx通过IPv6 (AAAA record) 的方式解析DNS，否则由于docker网络是ipv4的网络类型，Nginx无法解析对应的服务名。</li>
-</ul>
-<h2 id="反向代理优点"><a href="#反向代理优点" class="headerlink" title="反向代理优点"></a>反向代理优点</h2><p>最后总结下使用Nginx反向代理的好处吧</p>
-<ul>
-<li>使用Nginx反向代理可以解决前端跨域问题<br>Nginx反向代理使浏览器对于后端的服务地址“看起来”和前端处于相同的域下，不会产生跨域。</li>
-<li>隐藏服务端信息，安全性高<br>使用反向代理服务器不需要每个服务的端口都对外部暴露，只需要暴露22端口即可，同时统一的配置可以隐藏服务端细节，降低服务器被攻击的概率。</li>
-<li>负载均衡<br>以反向代理为基础的负载均衡可以合理分配流量，降低单点服务器的压力。</li>
-</ul>
+<h3 id="为什么使用三点评估"><a href="#为什么使用三点评估" class="headerlink" title="为什么使用三点评估"></a>为什么使用三点评估</h3><p>三点评估在评估过程中考虑到了项目中不确定性的风险，且有概率统计的依据，保证了评估的准确性，同时该方法计算简单、容易理解在实际开发工作中的使用门槛还是较低的。</p>
+<h2 id="其他评估方法"><a href="#其他评估方法" class="headerlink" title="其他评估方法"></a>其他评估方法</h2><p>除了三点评估，下面的一些方法也常常用来进行工作量的评估：<br>|方法    |描述    |评价|<br>|—–|—-|—|<br>|类比法    |和过往类似项目进行类比估算    |不同项目之间往往存在较大差异，存在较大风险|<br>|专家推断    |行业内经验较丰富人员的给出指导性意见    |过度依赖个人经验，不具备普适性|<br>|参数估算    |根据任务进行中特定材料的耗费情况进行估算    |不适用于软件开发|<br>|自下而上估算    |将任务拆分成一个一个细致的工作包，并单独评估，最终汇总|    最准确，但是评估成本较高，在开发中适用于小型简单的任务|</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>不要轻视启动阶段的计划评估工作，这一过程也是对需求深入理解的过程，从而规避复工、回炉重造的风险。一个好的工作量评估，需要建立在对当前的需求足够了解，可以识别潜在风险的基础上。评估中往往允许我们合理加入一定的Buffer时间，因为一旦延期，你可能影响到的是后续他人的工作计划，从而影响整体的交付时间。管理规范的团队延期后往往会组织复盘会，所花费的代价远不止少评估了工作量这么简单。当然也为了避免延期预留过多的Buffer时间，造成人力资源的浪费。最后分享帕金森定律中最常被引用的一句话：</p>
+<blockquote>
+<p>Work expands to fill the time available for its completion.<br>你可以用来完成工作的时间有多少，你的工作就会拖延、膨胀、复杂到让你足以填满那段时间为止。</p>
+</blockquote>
+<p>希望使用三点评估法可以帮助你合理科学的评估开发工作量。</p>
 
       
     </div>
@@ -391,7 +378,7 @@ img {
       
         <div class="post-tags">
           
-            <a href="/tags/反向代理/" rel="tag"># 反向代理</a>
+            <a href="/tags/三点估算/" rel="tag"># 三点估算</a>
           
         </div>
       
@@ -404,8 +391,8 @@ img {
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/article/web-component/" rel="next" title="Web Components初体验">
-                <i class="fa fa-chevron-left"></i> Web Components初体验
+              <a href="/article/mac-read-ntfs/" rel="next" title="Mac读写NTFS文件系统移动硬盘">
+                <i class="fa fa-chevron-left"></i> Mac读写NTFS文件系统移动硬盘
               </a>
             
           </div>
@@ -414,8 +401,8 @@ img {
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/article/fix-win10-dns/" rel="prev" title="记录一次Windows10中局域网设备名无法解析问题解决过程">
-                记录一次Windows10中局域网设备名无法解析问题解决过程 <i class="fa fa-chevron-right"></i>
+              <a href="/article/post-content-type/" rel="prev" title="POST请求的编码方式">
+                POST请求的编码方式 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -566,7 +553,7 @@ img {
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用场景"><span class="nav-number">1.</span> <span class="nav-text">使用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#容器间的通信"><span class="nav-number">2.</span> <span class="nav-text">容器间的通信</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置方法"><span class="nav-number">3.</span> <span class="nav-text">配置方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反向代理优点"><span class="nav-number">4.</span> <span class="nav-text">反向代理优点</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#详解三点估算"><span class="nav-number">1.</span> <span class="nav-text">详解三点估算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是三点估算"><span class="nav-number">1.1.</span> <span class="nav-text">什么是三点估算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Buffer时间的设定"><span class="nav-number">1.2.</span> <span class="nav-text">Buffer时间的设定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于三点估算的思考"><span class="nav-number">1.3.</span> <span class="nav-text">关于三点估算的思考</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么使用三点评估"><span class="nav-number">1.4.</span> <span class="nav-text">为什么使用三点评估</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他评估方法"><span class="nav-number">2.</span> <span class="nav-text">其他评估方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
