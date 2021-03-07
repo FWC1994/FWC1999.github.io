@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="地图瓦片,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="目前，有很多WebGIS开发包，ArcGIS API for JS、OpenLayers、LeafLetjs等为我们从事WebGIS开发的人封装了很多强大的功能。我们很方便的使用这些库的时候，也让我们忽略了很多原理性的东西。">
+<meta name="keywords" content="地图瓦片">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WebGIS前端瓦片地图显示原理及实现">
+<meta property="og:url" content="http://fengwc.cn/article/webgis-map/index.html">
+<meta property="og:site_name" content="╰ 羽翼 ╮的博客">
+<meta property="og:description" content="目前，有很多WebGIS开发包，ArcGIS API for JS、OpenLayers、LeafLetjs等为我们从事WebGIS开发的人封装了很多强大的功能。我们很方便的使用这些库的时候，也让我们忽略了很多原理性的东西。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://fengwc.cn/images/article/WebGIS前端瓦片地图显示原理及实现/1.png">
+<meta property="og:image" content="http://fengwc.cn/images/article/WebGIS前端瓦片地图显示原理及实现/2.png">
+<meta property="og:updated_time" content="2021-03-07T06:26:13.130Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="WebGIS前端瓦片地图显示原理及实现">
+<meta name="twitter:description" content="目前，有很多WebGIS开发包，ArcGIS API for JS、OpenLayers、LeafLetjs等为我们从事WebGIS开发的人封装了很多强大的功能。我们很方便的使用这些库的时候，也让我们忽略了很多原理性的东西。">
+<meta name="twitter:image" content="http://fengwc.cn/images/article/WebGIS前端瓦片地图显示原理及实现/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://fengwc.cn/article/webgis-map/">
+
+
+
+
+
+  <title>WebGIS前端瓦片地图显示原理及实现 | ╰ 羽翼 ╮的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">╰ 羽翼 ╮的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fengwc.cn/article/webgis-map/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="羽翼">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="╰ 羽翼 ╮的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">WebGIS前端瓦片地图显示原理及实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-23T00:00:00+08:00">
+                2018-02-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WebGIS/" itemprop="url" rel="index">
+                    <span itemprop="name">WebGIS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>目前，有很多WebGIS开发包，ArcGIS API for JS、OpenLayers、LeafLetjs等为我们从事WebGIS开发的人封装了很多强大的功能。我们很方便的使用这些库的时候，也让我们忽略了很多原理性的东西。</p>
+<a id="more"></a>
+<p>比如说，我之前一直在被一个问题困扰，就是如何将一个点正确的显示在浏览器屏幕的正确的位置，即经纬度坐标和屏幕坐标的转换问题。直到我看到一位大牛的<a href="https://www.cnblogs.com/naaoveGIS/category/600559.html" rel="external nofollow noopener noreferrer" target="_blank">博客</a>，里面对WebGIS的原理进行了深入的讲解。看了他的文章后一直觉得，我写这篇文章是多余的。但是大神的文章里面并没有详细讲解原理的代码实现。个人觉得还是很有必要通过实现相应功能的方式了解其原理，而且实现时还是遇到了不少的问题，所以还是写了这篇文章。</p>
+<h2 id="在线地图及参数"><a href="#在线地图及参数" class="headerlink" title="在线地图及参数"></a>在线地图及参数</h2><p>以<a href="http://cache1.arcgisonline.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer" rel="external nofollow noopener noreferrer" target="_blank">Arcgis online</a>上的瓦片地图为例，服务中有几个比较关键的使用到的参数。</p>
+<ul>
+<li>Height、Weight：每个瓦片的宽度和高度</li>
+<li>Resolution：每一个缩放级别下1像素代表的地图单位（投影坐标）</li>
+<li>Initial Extent：瓦片地图的范围</li>
+</ul>
+<h2 id="获取地图瓦片"><a href="#获取地图瓦片" class="headerlink" title="获取地图瓦片"></a>获取地图瓦片</h2><p>通过观察arcgis地图的瓦片组织方式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://cache1.arcgisonline.cn/ArcGIS/rest/services/ChinaOnlineCommunityOnlyENG/MapServer/tile/缩放等级/行号/列号</span><br></pre></td></tr></table></figure></p>
+<p>通过python程序将一定缩放等级的瓦片保存到本地 我只抓取了0-5级别的瓦片，并按照arcgis瓦片的保存方式存储。<br><img src="../../images/article/WebGIS前端瓦片地图显示原理及实现/1.png" alt="瓦片"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br><span class="line">import urllib2</span><br><span class="line">import urllib</span><br><span class="line">import os</span><br><span class="line">import math</span><br><span class="line">def GetPage(geturl):</span><br><span class="line">    req = urllib2.Request(geturl)</span><br><span class="line">    user_agent = &apos;Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 &apos; \</span><br><span class="line">                 &apos;(KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36&apos;</span><br><span class="line">    req.add_header(&apos;User-Agent&apos;, user_agent)</span><br><span class="line">    response = urllib2.urlopen(req, timeout=10)</span><br><span class="line">    page = response.read()</span><br><span class="line">    return page</span><br><span class="line">for level in range(0,6):</span><br><span class="line">    try:</span><br><span class="line">        newdir = &quot;MapTitles/&quot;+str(level)</span><br><span class="line">        os.makedirs(newdir.decode(&quot;utf-8&quot;))</span><br><span class="line">    except:</span><br><span class="line">        pass</span><br><span class="line">    for row in range(0,int(math.pow(2,level))):</span><br><span class="line">        try:</span><br><span class="line">            newdir = &quot;MapTitles/&quot;+str(level)+&quot;/&quot;+str(row)</span><br><span class="line">            os.makedirs(newdir.decode(&quot;utf-8&quot;))</span><br><span class="line">        except:</span><br><span class="line">            pass</span><br><span class="line">        for col in range(0,int(math.pow(2,level))):</span><br><span class="line">            f = open(&quot;MapTitles/&quot;+str(level)+&quot;/&quot;+str(row)+&quot;/&quot;+str(col)+&apos;.jpg&apos;, &apos;wb&apos;)</span><br><span class="line">            dataurl = &quot;http://cache1.arcgisonline.cn/ArcGIS/rest/services/ChinaOnlineCommunityOnlyENG/MapServer/tile/&quot;+str(level)+&quot;/&quot;+str(row)+&quot;/&quot;+str(col)</span><br><span class="line">            data = GetPage(dataurl)</span><br><span class="line">            f.write(data)</span><br><span class="line">            f.close()</span><br><span class="line">            pass</span><br><span class="line">        pass</span><br><span class="line">    pass</span><br></pre></td></tr></table></figure>
+<h2 id="展示页面"><a href="#展示页面" class="headerlink" title="展示页面"></a>展示页面</h2><p>展会页面只含有一个canvas元素作为地图容器。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html lang=&quot;en&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;meta charset=&quot;UTF-8&quot;&gt;</span><br><span class="line">    &lt;title&gt;显示瓦片地图&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;canvas width=&quot;1000px&quot; height=&quot;700px&quot; id=&quot;mapcv&quot; style=&quot;margin: 10px&quot;&gt;&lt;/canvas&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;script src=&quot;Libs/jquery-1.9.1.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;script src=&quot;Scripts/config.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;script src=&quot;Scripts/init.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="配置信息"><a href="#配置信息" class="headerlink" title="配置信息"></a>配置信息</h2><p>在config.js里面保存了相关的配置信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">var MapConfig=&#123;</span><br><span class="line">    RootDir:&apos;MapTitles/&apos;,</span><br><span class="line">    ViewHeight:700,</span><br><span class="line">    ViewWidth:1000,</span><br><span class="line">    TitlePix:256,</span><br><span class="line">    Resolution:[156543.033928,78271.5169639999,39135.7584820001,19567.8792409999,</span><br><span class="line">                9783.93962049996,4891.96981024998,2445.98490512499,1222.99245256249,</span><br><span class="line">                611.49622628138,305.748113140558,152.874056570411,76.4370282850732,</span><br><span class="line">                38.2185141425366,19.1092570712683,9.55462853563415,4.77731426794937,</span><br><span class="line">                2.38865713397468,1.19432856685505],</span><br><span class="line">    Scale:[ 591657527.591555,295828763.795777,147914381.897889,73957190.948944,</span><br><span class="line">            36978595.474472,18489297.737236,9244648.868618,4622324.434309,2311162.217155,</span><br><span class="line">            1155581.108577,577790.554289,288895.277144,144447.638572,72223.819286,</span><br><span class="line">            36111.909643,18055.954822,9027.977411,4513.988705],</span><br><span class="line">    FullExtent:&#123;</span><br><span class="line">        xmin : -20037507.0672,</span><br><span class="line">        ymin : -20036018.7354,</span><br><span class="line">        xmax : 20037507.0672,</span><br><span class="line">        ymax : 20102482.4102,</span><br><span class="line">        spatialReference : &#123;</span><br><span class="line">            wkid : 102100</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h2 id="功能实现-init-js"><a href="#功能实现-init-js" class="headerlink" title="功能实现 init.js"></a>功能实现 init.js</h2><p>上面只是把代码列了出来，这一部分才是我要讲的终点（才到重点☺）</p>
+<ol>
+<li>确定战士的地图中心点坐标，以及缩放级别</li>
+<li>计算当前窗口显示的地图范围<br>我们可以根据窗口的中心点坐标，窗口大小，以及当前缩放级别的Resolution可以很容易通过计算得到，当前窗口你可以看到的地图范围。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//当前窗口显示的范围</span><br><span class="line">minX=centerGeoPoint.x-(MapConfig.Resolution[level]*MapConfig.ViewWidth/2);</span><br><span class="line">maxX=centerGeoPoint.x+(MapConfig.Resolution[level]*MapConfig.ViewWidth/2);</span><br><span class="line">minY=centerGeoPoint.y-(MapConfig.Resolution[level]*MapConfig.ViewHeight/2);</span><br><span class="line">maxY=centerGeoPoint.y+(MapConfig.Resolution[level]*MapConfig.ViewHeight/2);</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>此处要注意一下地图的行列号的起点在左上角，但是地图左上角的投影坐标x是最小的，y是最大的。也就会说行列号的起点在左上角，投影坐标的起点在左下角。</p>
+<ol start="3">
+<li><p>计算左上角起始行列号</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//左上角开始的行列号</span><br><span class="line">leftTopTitleRow = Math.floor(Math.abs(maxY-MapConfig.FullExtent.ymax)/MapConfig.Resolution[level]/MapConfig.TitlePix);</span><br><span class="line">leftTopTitleCol = Math.floor(Math.abs(minX-MapConfig.FullExtent.xmin)/MapConfig.Resolution[level]/MapConfig.TitlePix);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>计算实际地理范围</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//实际地理范围</span><br><span class="line">realMinX = MapConfig.FullExtent.xmin+leftTopTitleCol*MapConfig.TitlePix*MapConfig.Resolution[level];</span><br><span class="line">realMaxY = MapConfig.FullExtent.ymax-leftTopTitleRow*MapConfig.TitlePix*MapConfig.Resolution[level];</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>我们都知道，我们获取到的瓦片的范围一定是大于显示窗口的范围。否则在窗口内显示的地图是不完整的<br><img src="../../images/article/WebGIS前端瓦片地图显示原理及实现/2.png" alt></p>
+<ol start="5">
+<li><p>计算左上角偏移像素<br>在将地图瓦片拼接到窗口内是需要考虑到实际地理范围与显示地理范围的偏移</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//计算左上角偏移像素</span><br><span class="line">offSetX = (realMinX-minX)/MapConfig.Resolution[level];</span><br><span class="line">offSetY = (maxY-realMaxY)/MapConfig.Resolution[level];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>计算瓦片个数<br>获得瓦片个数后就可以根据瓦片个数以及偏移后的起始瓦片位置，将每一个瓦片拼接到canvas相应的位置上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//计算瓦片个数</span><br><span class="line">xClipNum = Math.ceil((MapConfig.ViewHeight+Math.abs(offSetY))/MapConfig.TitlePix);</span><br><span class="line">yClipNum = Math.ceil((MapConfig.ViewWidth+Math.abs(offSetX))/MapConfig.TitlePix);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>前端绘制瓦片</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">var mapcv = document.getElementById(&quot;mapcv&quot;);</span><br><span class="line">var myctx = mapcv.getContext(&quot;2d&quot;);</span><br><span class="line">for(var i=0;i&lt;xClipNum;i++)&#123;</span><br><span class="line">    for(var j=0;j&lt;yClipNum;j++)&#123;</span><br><span class="line">        var beauty = new Image();</span><br><span class="line">        beauty.src = MapConfig.RootDir+level+&quot;/&quot;+(leftTopTitleRow+i)+&quot;/&quot;+(leftTopTitleCol+j)+&quot;.jpg&quot;;</span><br><span class="line">        var TitleImg=&#123;</span><br><span class="line">            img:null,</span><br><span class="line">            x:0,</span><br><span class="line">            y:0</span><br><span class="line">        &#125;;</span><br><span class="line">        TitleImg.img=beauty;</span><br><span class="line">        TitleImg.x=offSetX+(j*MapConfig.TitlePix);</span><br><span class="line">        TitleImg.y=offSetY+(i*MapConfig.TitlePix);</span><br><span class="line">        TitlesArry.push(TitleImg);</span><br><span class="line">        myctx.drawImage(TitleImg.img, TitleImg.x, TitleImg.y);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>希望对WebGIS的初学者理解瓦片地图显示原理能有帮助</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/地图瓦片/" rel="tag"># 地图瓦片</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/article/gcj02-bd09-wgs84-web-mecator-convert/" rel="next" title="火星坐标、百度坐标、WGS-84坐标相互转换及墨卡托投影坐标转经纬度">
+                <i class="fa fa-chevron-left"></i> 火星坐标、百度坐标、WGS-84坐标相互转换及墨卡托投影坐标转经纬度
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/article/leaflet-draw-multipolygon/" rel="prev" title="Leaflet.draw 无法编辑multipolygon类型多边形 解决方法">
+                Leaflet.draw 无法编辑multipolygon类型多边形 解决方法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="羽翼">
+            
+              <p class="site-author-name" itemprop="name">羽翼</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/FWC1994" target="_blank" title="GitHub" rel="external nofollow noopener noreferrer">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:fengweichong@foxmail.com" target="_blank" title="E-Mail" rel="external nofollow noopener noreferrer">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#在线地图及参数"><span class="nav-number">1.</span> <span class="nav-text">在线地图及参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取地图瓦片"><span class="nav-number">2.</span> <span class="nav-text">获取地图瓦片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#展示页面"><span class="nav-number">3.</span> <span class="nav-text">展示页面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置信息"><span class="nav-number">4.</span> <span class="nav-text">配置信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#功能实现-init-js"><span class="nav-number">5.</span> <span class="nav-text">功能实现 init.js</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">羽翼</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io" rel="external nofollow noopener noreferrer">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow noopener noreferrer">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -979,6 +979,444 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fengwc.cn/article/webgis-clip/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="羽翼">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="╰ 羽翼 ╮的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/article/webgis-clip/" itemprop="url">WebGIS裁剪算法-线裁剪多边形</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-28T00:00:00+08:00">
+                2018-06-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WebGIS/" itemprop="url" rel="index">
+                    <span itemprop="name">WebGIS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>在gis系统中 经常会用到一些裁剪的方法，首先推荐一个非常好用的空间分析JavaScript库–Turf.js，不仅功能强大、使用简单，同时处理速度也很快。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/article/webgis-clip/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fengwc.cn/article/leaflet-draw-multipolygon/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="羽翼">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="╰ 羽翼 ╮的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/article/leaflet-draw-multipolygon/" itemprop="url">Leaflet.draw 无法编辑multipolygon类型多边形 解决方法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-20T00:00:00+08:00">
+                2018-06-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WebGIS/" itemprop="url" rel="index">
+                    <span itemprop="name">WebGIS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="问题说明"><a href="#问题说明" class="headerlink" title="问题说明"></a>问题说明</h2><p>在做面要素的编辑的时候，当对multiploygon类型的面要素进行编辑的时候，出现如下错误：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TypeError: Cannot read property &apos;lat&apos; of null</span><br></pre></td></tr></table></figure></p>
+<p>通过查看github issues发现Leaftlet.Draw插件并不支持multipolygon类型的要素<br><a href="https://github.com/Leaflet/Leaflet.draw/issues/268" rel="external nofollow noopener noreferrer" target="_blank">https://github.com/Leaflet/Leaflet.draw/issues/268</a></p>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>通过测试发现可以通过将multipolygon拆分成多个polygon要素的方法可以解决这个问题<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">function multiPolygon2polygons (multiPolygon)&#123;</span><br><span class="line">    if(multiPolygon.type !== &apos;MultiPolygon&apos;)&#123;</span><br><span class="line">        return</span><br><span class="line">    &#125;</span><br><span class="line">    var polygons = [];</span><br><span class="line">    multiPolygon.coordinates.forEach((item)=&gt;&#123;</span><br><span class="line">        var polygon = &#123;</span><br><span class="line">            type: &quot;Polygon&quot;,</span><br><span class="line">            coordinates: []</span><br><span class="line">        &#125;;</span><br><span class="line">        polygon.coordinates = item;</span><br><span class="line">        polygons.push(polygon)</span><br><span class="line">    &#125;);</span><br><span class="line">    return polygons;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>有时候原始数据可能还是需要保存成multipolygon类型的数据 这时就需要再讲拆分的polygons合并成一个multipolygon</p>
+<p>合并方法如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function polygons2MultiPolygon(geoJson) &#123;</span><br><span class="line">    var newGeoJson = &#123;</span><br><span class="line">        type: &quot;FeatureCollection&quot;,</span><br><span class="line">        features: [&#123;geometry: &#123;coordinates: [], type: &quot;MultiPolygon&quot;&#125;, type: &quot;Feature&quot;, properties: &#123;&#125;&#125;]</span><br><span class="line">    &#125;;</span><br><span class="line">    geoJson.features.forEach((item) =&gt; &#123;</span><br><span class="line">        if(item.geometry.type === &quot;Polygon&quot;)&#123;</span><br><span class="line">            newGeoJson.features[0].geometry.coordinates.push(item.geometry.coordinates);</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            item.geometry.coordinates.forEach((item) =&gt; &#123;</span><br><span class="line">                newGeoJson.features[0].geometry.coordinates.push(item);</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    return newGeoJson;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://fengwc.cn/article/webgis-map/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="羽翼">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="╰ 羽翼 ╮的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/article/webgis-map/" itemprop="url">WebGIS前端瓦片地图显示原理及实现</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-23T00:00:00+08:00">
+                2018-02-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WebGIS/" itemprop="url" rel="index">
+                    <span itemprop="name">WebGIS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>目前，有很多WebGIS开发包，ArcGIS API for JS、OpenLayers、LeafLetjs等为我们从事WebGIS开发的人封装了很多强大的功能。我们很方便的使用这些库的时候，也让我们忽略了很多原理性的东西。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/article/webgis-map/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://fengwc.cn/article/gcj02-bd09-wgs84-web-mecator-convert/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1164,7 +1602,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-count">29</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1186,7 +1624,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-count">32</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
