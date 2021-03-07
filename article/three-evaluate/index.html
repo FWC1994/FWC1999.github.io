@@ -87,12 +87,13 @@
 <meta property="og:site_name" content="╰ 羽翼 ╮的博客">
 <meta property="og:description" content="开发人员在进行开发工作之前都需要给出一个工作量的评估，以便后续的工作任务可以基于该时间进行排期。大多数开发人员评估工作量主要是基于过往的工作经验拍脑袋决定，并会给自己预留出一定的Buffer时间。这样可能的问题就是过度依赖个人的开发经验，且Buffer时间的没办法量化。我们需要一种科学的工作量评估方法——三点估算。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://fengwc.cn/article/images/article/三点估算评估开发工作量/2.png">
-<meta property="og:updated_time" content="2021-03-07T05:28:28.223Z">
+<meta property="og:image" content="http://fengwc.cn/images/article/三点估算评估开发工作量/1.jpg">
+<meta property="og:image" content="http://fengwc.cn/images/article/三点估算评估开发工作量/2.png">
+<meta property="og:updated_time" content="2021-03-07T05:30:51.745Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="三点估算评估开发工作量">
 <meta name="twitter:description" content="开发人员在进行开发工作之前都需要给出一个工作量的评估，以便后续的工作任务可以基于该时间进行排期。大多数开发人员评估工作量主要是基于过往的工作经验拍脑袋决定，并会给自己预留出一定的Buffer时间。这样可能的问题就是过度依赖个人的开发经验，且Buffer时间的没办法量化。我们需要一种科学的工作量评估方法——三点估算。">
-<meta name="twitter:image" content="http://fengwc.cn/article/images/article/三点估算评估开发工作量/2.png">
+<meta name="twitter:image" content="http://fengwc.cn/images/article/三点估算评估开发工作量/1.jpg">
 
 
 
@@ -284,8 +285,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-23T00:00:00+08:00">
-                2020-02-23
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-23T00:00:00+08:00">
+                2021-02-23
               </time>
             
 
@@ -344,18 +345,75 @@
       
 
       
-        <p>开发人员在进行开发工作之前都需要给出一个工作量的评估，以便后续的工作任务可以基于该时间进行排期。大多数开发人员评估工作量主要是基于过往的工作经验拍脑袋决定，并会给自己预留出一定的Buffer时间。这样可能的问题就是过度依赖个人的开发经验，且Buffer时间的没办法量化。我们需要一种科学的工作量评估方法——三点估算。</p>
+        <p><img src="../../images/article/三点估算评估开发工作量/1.jpg" alt="封面"><br>开发人员在进行开发工作之前都需要给出一个工作量的评估，以便后续的工作任务可以基于该时间进行排期。大多数开发人员评估工作量主要是基于过往的工作经验拍脑袋决定，并会给自己预留出一定的Buffer时间。这样可能的问题就是过度依赖个人的开发经验，且Buffer时间的没办法量化。我们需要一种科学的工作量评估方法——三点估算。</p>
 <a id="more"></a>
 <h2 id="详解三点估算"><a href="#详解三点估算" class="headerlink" title="详解三点估算"></a>详解三点估算</h2><h3 id="什么是三点估算"><a href="#什么是三点估算" class="headerlink" title="什么是三点估算"></a>什么是三点估算</h3><p>先来介绍一下什么是三点估算法：<br>三点法评估需要将一个任务的时间评估分成：最乐观时间、最可能时间、最悲观时间。好比上班路上花费的时间，一般最可能花费时间是30min；乐观情况不堵车都是绿灯只需要20min，如果悲观考虑到可能赶上上班高峰，路上很堵则需要50min才能到公司。<br>将工作量模拟成正态分布的形式。那么就可以得到如下的公式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">期望值μ = (最乐观时间 + 4 x 最可能时间 + 最悲观时间) ➗ 6</span><br><span class="line">标准差σ= (最悲观时间 - 最乐观时间) ➗ 6</span><br></pre></td></tr></table></figure></p>
-<p><img src="../images/article/三点估算评估开发工作量/2.png" alt="正态分布"><br>通过计算得到的期望值μ是一个预期工作的持续时间，标准差σ代表由于开发过程中的不确定因素导致实际工期和期望工期的浮动时间。</p>
-<h3 id="Buffer时间的设定"><a href="#Buffer时间的设定" class="headerlink" title="Buffer时间的设定"></a>Buffer时间的设定</h3><p>我们先来回答一个问题：我们在计算得到的【期望值μ】之前完成开发工作的任务的概率是多少——没错，不论开发经验是否丰富都只有50%！<br>明显如果你给出一个工作量评估并跟PM说我只有50%的可能性完成，他可能会告诉你，我也有50%的可能性不给你发项目奖金。<br>学过概率论正态分布我们会知道点落在各个区间的概率存在如下规律：<br>|标准差区间    |区间概率    |完成概率|<br>|———-|——-|——-|<br>|1倍标准差    |68.3    |84.15|<br>|2倍标准差    |95.4    |97.7|<br>|3倍标准差    |99.7    |99.85|</p>
+<p><img src="../../images/article/三点估算评估开发工作量/2.png" alt="正态分布"><br>通过计算得到的期望值μ是一个预期工作的持续时间，标准差σ代表由于开发过程中的不确定因素导致实际工期和期望工期的浮动时间。</p>
+<h3 id="Buffer时间的设定"><a href="#Buffer时间的设定" class="headerlink" title="Buffer时间的设定"></a>Buffer时间的设定</h3><p>我们先来回答一个问题：我们在计算得到的【期望值μ】之前完成开发工作的任务的概率是多少——没错，不论开发经验是否丰富都只有50%！<br>明显如果你给出一个工作量评估并跟PM说我只有50%的可能性完成，他可能会告诉你，我也有50%的可能性不给你发项目奖金。<br>学过概率论正态分布我们会知道点落在各个区间的概率存在如下规律：</p>
+<table>
+<thead>
+<tr>
+<th>标准差区间</th>
+<th>区间概率</th>
+<th>完成概率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1倍标准差</td>
+<td>68.3</td>
+<td>84.15</td>
+</tr>
+<tr>
+<td>2倍标准差</td>
+<td>95.4</td>
+<td>97.7</td>
+</tr>
+<tr>
+<td>3倍标准差</td>
+<td>99.7</td>
+<td>99.85</td>
+</tr>
+</tbody>
+</table>
 <p>因此我们我们可以通过在计算得到的期望值的基础上适当增加标准差时间作为Buffer，来保证我们的工作可以按时交付。</p>
 <h3 id="关于三点估算的思考"><a href="#关于三点估算的思考" class="headerlink" title="关于三点估算的思考"></a>关于三点估算的思考</h3><ul>
 <li>工作评估粒度问题<br>在评估前我们都需要对当前任务进行拆分，使用三点估算我们不需要粒度拆分的很小，因为最初没办法面面俱到考虑到所有功能点，粒度维持在一个中小型独立的功能模块为宜。</li>
 <li>标准差的理解<br>数学上标准差代表着数据的稳定性，标准差越大数据波动越大，在三点估算中标准差也反映着开发者的对于当前工作熟练程度，因此，越是经验丰富在熟悉的领域最终的标准差就会越小，陌生的领域也会计算得到较大的Buffer时间，保证可以如期交付。</li>
 </ul>
 <h3 id="为什么使用三点评估"><a href="#为什么使用三点评估" class="headerlink" title="为什么使用三点评估"></a>为什么使用三点评估</h3><p>三点评估在评估过程中考虑到了项目中不确定性的风险，且有概率统计的依据，保证了评估的准确性，同时该方法计算简单、容易理解在实际开发工作中的使用门槛还是较低的。</p>
-<h2 id="其他评估方法"><a href="#其他评估方法" class="headerlink" title="其他评估方法"></a>其他评估方法</h2><p>除了三点评估，下面的一些方法也常常用来进行工作量的评估：<br>|方法    |描述    |评价|<br>|—–|—-|—|<br>|类比法    |和过往类似项目进行类比估算    |不同项目之间往往存在较大差异，存在较大风险|<br>|专家推断    |行业内经验较丰富人员的给出指导性意见    |过度依赖个人经验，不具备普适性|<br>|参数估算    |根据任务进行中特定材料的耗费情况进行估算    |不适用于软件开发|<br>|自下而上估算    |将任务拆分成一个一个细致的工作包，并单独评估，最终汇总|    最准确，但是评估成本较高，在开发中适用于小型简单的任务|</p>
+<h2 id="其他评估方法"><a href="#其他评估方法" class="headerlink" title="其他评估方法"></a>其他评估方法</h2><p>除了三点评估，下面的一些方法也常常用来进行工作量的评估：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+<th>评价</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>类比法</td>
+<td>和过往类似项目进行类比估算</td>
+<td>不同项目之间往往存在较大差异，存在较大风险</td>
+</tr>
+<tr>
+<td>专家推断</td>
+<td>行业内经验较丰富人员的给出指导性意见</td>
+<td>过度依赖个人经验，不具备普适性</td>
+</tr>
+<tr>
+<td>参数估算</td>
+<td>根据任务进行中特定材料的耗费情况进行估算</td>
+<td>不适用于软件开发</td>
+</tr>
+<tr>
+<td>自下而上估算</td>
+<td>将任务拆分成一个一个细致的工作包，并单独评估，最终汇总</td>
+<td>最准确，但是评估成本较高，在开发中适用于小型简单的任务</td>
+</tr>
+</tbody>
+</table>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>不要轻视启动阶段的计划评估工作，这一过程也是对需求深入理解的过程，从而规避复工、回炉重造的风险。一个好的工作量评估，需要建立在对当前的需求足够了解，可以识别潜在风险的基础上。评估中往往允许我们合理加入一定的Buffer时间，因为一旦延期，你可能影响到的是后续他人的工作计划，从而影响整体的交付时间。管理规范的团队延期后往往会组织复盘会，所花费的代价远不止少评估了工作量这么简单。当然也为了避免延期预留过多的Buffer时间，造成人力资源的浪费。最后分享帕金森定律中最常被引用的一句话：</p>
 <blockquote>
 <p>Work expands to fill the time available for its completion.<br>你可以用来完成工作的时间有多少，你的工作就会拖延、膨胀、复杂到让你足以填满那段时间为止。</p>
@@ -391,8 +449,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/article/mac-read-ntfs/" rel="next" title="Mac读写NTFS文件系统移动硬盘">
-                <i class="fa fa-chevron-left"></i> Mac读写NTFS文件系统移动硬盘
+              <a href="/article/react-native/file-download/" rel="next" title="React Native 实现文件下载">
+                <i class="fa fa-chevron-left"></i> React Native 实现文件下载
               </a>
             
           </div>
@@ -400,10 +458,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/article/post-content-type/" rel="prev" title="POST请求的编码方式">
-                POST请求的编码方式 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
