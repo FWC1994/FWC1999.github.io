@@ -86,14 +86,14 @@
 <meta property="og:site_name" content="╰ 羽翼 ╮的博客">
 <meta property="og:description" content="React Native的主要作用是让开发者可以使用前端React的开发框架来开发可以在多个平台运行的应用。仅仅了解前端开发可以让我们快速搭建一款简单的App，但是深入了解了React Native的底层原理，可以帮助我们更好的定位开发中遇到的问题，和从多端的角度出发解决问题。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://fengwc.cn/images/article/react-native/3.jpg">
-<meta property="og:image" content="http://fengwc.cn/images/article/react-native/5.jpg">
-<meta property="og:image" content="http://fengwc.cn/images/article/react-native/6.jpg">
-<meta property="og:updated_time" content="2021-02-06T01:56:05.371Z">
+<meta property="og:image" content="http://fengwc.cn/images/article/react-native/3.png">
+<meta property="og:image" content="http://fengwc.cn/images/article/react-native/5.png">
+<meta property="og:image" content="http://fengwc.cn/images/article/react-native/6.gif">
+<meta property="og:updated_time" content="2021-03-16T02:56:16.949Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="React Native工作原理探究">
 <meta name="twitter:description" content="React Native的主要作用是让开发者可以使用前端React的开发框架来开发可以在多个平台运行的应用。仅仅了解前端开发可以让我们快速搭建一款简单的App，但是深入了解了React Native的底层原理，可以帮助我们更好的定位开发中遇到的问题，和从多端的角度出发解决问题。">
-<meta name="twitter:image" content="http://fengwc.cn/images/article/react-native/3.jpg">
+<meta name="twitter:image" content="http://fengwc.cn/images/article/react-native/3.png">
 
 
 
@@ -348,13 +348,13 @@
         <p>React Native的主要作用是让开发者可以使用前端React的开发框架来开发可以在多个平台运行的应用。仅仅了解前端开发可以让我们快速搭建一款简单的App，但是深入了解了React Native的底层原理，可以帮助我们更好的定位开发中遇到的问题，和从多端的角度出发解决问题。</p>
 <a id="more"></a>
 <h2 id="React在浏览器运行原理"><a href="#React在浏览器运行原理" class="headerlink" title="React在浏览器运行原理"></a>React在浏览器运行原理</h2><p>在了解React Native的原理之前我们先简单回顾一下React和浏览器的工作原理:<br>首先Babel将React JSX语法糖编译成React.createElement表达式即虚拟DOM节点，然后利用虚拟DOM的Diff算法，对比出需要渲染的元素交由浏览器的渲染引擎渲染，从而形成丰富的浏览器页面。那么React Native是如何将React代码展示在不同平台上呢？</p>
-<h2 id="基于Bridge的架构原理"><a href="#基于Bridge的架构原理" class="headerlink" title="基于Bridge的架构原理"></a>基于Bridge的架构原理</h2><p>在0.59版本之前React Native使用的基于Bridge的架构方式<br><img src="../../../images/article/react-native/3.jpg" alt></p>
+<h2 id="基于Bridge的架构原理"><a href="#基于Bridge的架构原理" class="headerlink" title="基于Bridge的架构原理"></a>基于Bridge的架构原理</h2><p>在0.59版本之前React Native使用的基于Bridge的架构方式<br><img src="../../../images/article/react-native/3.png" alt></p>
 <ol>
 <li>在开发阶段仍然是聚焦于React Components的开发，Babel会将代码编译成浏览器可识别的表达式，并打包成jsbundle文件存储于App设备本地或者存储于服务器（热更新机制）</li>
 <li>打开App后，加载并解析jsbundle文件，在JavascriptCore中进行运行，这个地方Android和IOS的差异就是IOS原生就带有一个JavascriptCore而Android中需要重新加载，所以这也造成了Android的初始化过程会比IOS慢一些。</li>
 <li>运行时需要将前端的组件渲染成Native端的视图，首先如同React中的虚拟DOM一样，在Bridge中也会构造出一个Shadow Tree，然后通过Yoga布局引擎将Flex布局转换为Native的布局，最终交由UIManager在Native端完成组件的渲染。<br>Bridge架构对于开发者来说很好的屏蔽了各个平台之间的差异，相对于WebView也能够提供不错的近原生操作体验。但是Javascript与Native之间的通信过度的依赖Bridge，当交互频繁或数据量很大的时候可能造成白屏或事件阻塞。而且JSON的序列化操作的效率也比较低。在Flutter的压力下，不改变意味着用户的流失，那么重构后的React Native是怎么优化的呢？</li>
 </ol>
-<h2 id="基于JSI的新架构原理"><a href="#基于JSI的新架构原理" class="headerlink" title="基于JSI的新架构原理"></a>基于JSI的新架构原理</h2><p><img src="../../../images/article/react-native/5.jpg" alt><br>首先解释下新架构下的几个新概念</p>
+<h2 id="基于JSI的新架构原理"><a href="#基于JSI的新架构原理" class="headerlink" title="基于JSI的新架构原理"></a>基于JSI的新架构原理</h2><p><img src="../../../images/article/react-native/5.png" alt><br>首先解释下新架构下的几个新概念</p>
 <ul>
 <li><p>JSI（Javascript Interface）：JSI的作用就是让Javascript可以持有C++对象的引用，并调用其方法，同时Native端（Android、IOS）均支持对于C++的支持。从而避免了使用Bridge对JSON的序列化与反序列化，实现了Javascript与Native端直接的通信。<br>JSI还屏蔽了不同浏览器引擎之间的差异，允许前端使用不同的浏览器引擎，因此Facebook针对Android 需要加载JavascriptCore的问题，研发了一个更适合Android的开源浏览器引擎Hermes。</p>
 </li>
@@ -365,7 +365,7 @@
 <li><p>TurboModules：旧架构下由于端与端之间的隔阂，运行时即便没有使用的模块也会被加载初始化，TurboModules允许Javascript代码仅在需要的时候才去加载对应的Native模块并保留对其直接的引用缩短了应用程序的启动时间。</p>
 </li>
 </ul>
-<p>总结一下，旧架构中Bridge为React Native JS与Native交互的性能瓶颈，那么新架构的核心改变就是避免了通过Bridge将数据从JavaScript序列化到Native。<br><img src="../../../images/article/react-native/6.jpg" alt></p>
+<p>总结一下，旧架构中Bridge为React Native JS与Native交互的性能瓶颈，那么新架构的核心改变就是避免了通过Bridge将数据从JavaScript序列化到Native。<br><img src="../../../images/article/react-native/6.gif" alt></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>文章的内容参考了国内外一些大佬的文章，初学者理解起来可能有一些难度，如果觉得不是很好理解可以试着先跳过，待通过React Native实战之后回过来在来看这部分内容，或许能让你有更深刻的感悟。</p>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
 <li><a href="https://www.youtube.com/watch?v=52El0EUI6D0" rel="external nofollow noopener noreferrer" target="_blank">React Native EU 2019: Emily Janzer - The New React Native</a></li>
