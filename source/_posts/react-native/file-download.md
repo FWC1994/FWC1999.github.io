@@ -30,7 +30,7 @@ HTTP Request的Header中可以设置一个Range参数，即对于一个HTTP请�
 
 ## 实现思路
 看了上面的几个核心技术方案，我们实现的思路已经很明确了。下载中断后再次下载时只需要获取已下载临时文件的大小，然后设置下载下载的Range: `bytes=${preSize}-`，下载完成后将临时文件以追加的方式合并至目标文件，这样就最终的结果就可以拼接成一个完整的文件。
-![](../../../images/article/react-native/8.jpg)
+![](../../../images/article/react-native/8.png)
 
 下载的任务列表、状态和进度等信息可以通过AsyncStorage进行持久化存储，并在UI层次进行展示。再次打开APP如果存在状态是未完成的任务，在wifi环境下就可以继续下载了。
 
